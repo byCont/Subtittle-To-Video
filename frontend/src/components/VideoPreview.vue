@@ -1,10 +1,8 @@
-//frontend/src/components/VideoPreview.vue
-
 <template>
   <div class="col-lg-6">
     <div class="align-center row">
       <b>Video Render Preview</b><br />
-      <div v-if="videoToRender && originalvideos.length > 0" style="width: 100%;max-width: 100%;">
+      <div v-if="videoToRender && originalVideos.length > 0" style="width: 100%; max-width: 100%;">
         <video :src="'http://localhost:5000/' + videoToRender" class="rounded-4" controls></video>
       </div>
       <div v-else>
@@ -15,7 +13,11 @@
 </template>
 
 <script>
-export default {
-  props: ['videoToRender', 'originalvideos'],
-};
+  export default {
+    name: 'VideoPreview',
+    props: {
+      videoToRender: String,
+      originalVideos: Array,
+    },
+  };
 </script>

@@ -1,62 +1,57 @@
-//frontend/src/App.vue
+/frontend/src/App.vue
 //main component
+
 <template>
   <div class="app-container">
     <AppHeader />
     <div class="container-fluid">
+      <br><br>
       <CustomLoader v-if="loading" />
       <div class="row">
-        <VideoPreview 
-          :videoToRender="videoToRender" 
-          :originalvideos="originalvideos" 
+        <VideoUpload 
+          @upload="uploadVideoFile"
+          @add-subtitles="addSubtitles"
+          :upload-progress="uploadprogress" 
         />
-        <div class="col-lg-6">
-          <VideoUploadForm 
-            @uploadVideo="uploadVideoFile"
-            @addSubtitles="addSubtitles"
-            :uploadprogress="uploadprogress" 
-          />
-          <VideoList 
-            :videos="videos" 
-            :originalvideos="originalvideos" 
-            @setRenderVideo="setRenderVideo"
-            @removeVideo="removeVideo"
-            @reloadOriginalVideo="reloadOriginalVideo"
-            @editVideoSubmit="editVideoSubmit"
-            @finalrender="finalrender"
-          />
-        </div>
+        <VideoPreview 
+          :video-to-render="videoToRender" 
+          :original-videos="originalvideos" 
+        />        
       </div>
+      <VideoList 
+        :videos="videos"
+        @remove-video="removeVideo"
+        @set-render-video="setRenderVideo"
+        @reload-original-video="reloadOriginalVideo"
+        @edit-video-submit="editVideoSubmit"
+      />
+      <MergeClipsButton 
+        v-if="videos.length > 0"
+        @final-render="finalrender" 
+      />
     </div>
   </div>
 </template>
 
 <script>
-import AppHeader from './components/main/AppHeader.vue';
-import CustomLoader from './components/main/CustomLoader.vue';
-import VideoPreview from './components/main/VideoPreview.vue';
-import VideoUploadForm from './components/main/VideoUploadForm.vue';
-import VideoList from './components/main/VideoList.vue';
+  import logic from './scripts/AppLogic.js';
+  import CustomLoader from './components/CustomLoader.vue';
+  import AppHeader from './components/AppHeader.vue';
+  import VideoPreview from './components/VideoPreview.vue';
+  import VideoUpload from './components/VideoUpload.vue';
+  import VideoList from './components/VideoList.vue';
+  import MergeClipsButton from './components/MergeClipsButton.vue';
+  import './App.css';
 
-export default {
-  data() {
-    return {
-      originalvideos: [],
-      videos: [],
-      loading: false,
-      videoToRender: null,
-      uploadprogress: 0,
-    };
-  },
-  methods: {
-    // Métodos existentes
-  },
-  components: {
-    AppHeader,
-    CustomLoader,
-    VideoPreview,
-    VideoUploadForm,
-    VideoList,
-  },
-};
+  export default {
+    mixins: [logic],
+    components: { 
+      CustomLoader, 
+      AppHeader, 
+      VideoPreview, 
+      VideoUpload, 
+      VideoList, 
+      MergeClipsButton 
+    },
+  };
 </script>
