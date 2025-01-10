@@ -1,4 +1,4 @@
-## Video yric generator
+## Video Lyric Generator
 
 Web based video editor created in VueJS frontend and Python,Flask backend with MoviePy. A new frontend is being created in Vue3.
 
