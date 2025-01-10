@@ -1,3 +1,5 @@
+// frontend/src/components/VideoList.vue
+
 <template>
   <div>
     <div v-for="(video, index) in videos" :key="index" class="row videodiv">

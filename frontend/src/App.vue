@@ -1,5 +1,4 @@
-/frontend/src/App.vue
-//main component
+// frontend/src/App.vue, Main component
 
 <template>
   <div class="app-container">
@@ -7,7 +6,7 @@
     <div class="container-fluid">
       <br><br>
       <CustomLoader v-if="loading" />
-      <div class="row">
+      <div class="row px-4">
         <VideoUpload 
           @upload="uploadVideoFile"
           @add-subtitles="addSubtitles"

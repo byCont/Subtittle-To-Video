@@ -1,3 +1,5 @@
+// frontend/src/components/MergeClipsButton.vue
+
 <template>
   <div class="col-sm-3">
     <button class="btn btn-success" @click="$emit('final-render')">Merge Clips</button>

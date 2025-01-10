@@ -1,5 +1,7 @@
+// frontend/src/components/VideoUpload.vue
+
 <template>
-  <div class="col-lg-6 video-upload-container">
+  <div class="col-lg-5 video-upload-container">
     <div class="form-group">
       <!-- Drag and Drop Area -->
       <div

@@ -1,5 +1,4 @@
-//frontend/src/components/CustomLoader.vue
-//component for loading spinner
+// frontend/src/components/CustomLoader.vue, component for loading spinner
 
 <template>
     <div class="loading">Loading&#8230;</div>

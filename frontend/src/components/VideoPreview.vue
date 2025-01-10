@@ -1,3 +1,5 @@
+// frontend/src/components/VideoPreview.vue
+
 <template>
   <div class="col-lg-6">
     <div class="align-center row">

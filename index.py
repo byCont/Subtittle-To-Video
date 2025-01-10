@@ -1,5 +1,4 @@
-#index.py
-# Video Editor Backend
+#index.py, Video Editor Backend
 
 from flask import Flask
 from flask import request

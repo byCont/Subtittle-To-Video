@@ -1,5 +1,4 @@
-# video_utils.py
-# Video editor backend
+# video_utils.py, Video editor backend
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 from config import config
