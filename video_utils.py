@@ -23,21 +23,25 @@ def mergeVideos(videoclip_filenames):
     final_clip.write_videofile(finalpath)
     return finalpath
 
-# Add Subtitles
-def addSubtitles(videofile: str, subtitlefile: str):
-    videofile_name = videofile.replace(config['video_savepath'], "")
-    output_path = config['video_savepath'] + "subtitled_" + str(int(time.time())) + videofile_name
+
+def generateVideoFromAudioAndSubtitles(audiofile: str, subtitlefile: str):
+    output_path = config['video_savepath'] + "generated_" + str(int(time.time())) + ".mp4"
 
     command = [
         "ffmpeg",
-        "-i", videofile,
+        "-f", "lavfi",
+        "-i", "color=c=black:s=1280x720",  # Fondo negro
+        "-i", audiofile,
         "-vf", (
             f"subtitles={subtitlefile}:force_style="
             "'FontName=Product Sans,FontSize=40,Alignment=2,MarginV=140,"
             "OutlineColour=&H80FFFFFF&,BorderStyle=1'"
         ),
+        "-shortest",
+        "-c:v", "libx264",
         "-c:a", "aac",
         "-b:a", "299k",
+        "-strict", "experimental",
         output_path
     ]
 

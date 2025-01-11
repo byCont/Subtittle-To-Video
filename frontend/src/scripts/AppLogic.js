@@ -86,24 +86,28 @@ export default {
           this.loading = false;
         });
     },
-    addSubtitles() {
+    generateVideo() {
+      const audioFile = document.getElementById("audioinput").files[0];
       const subtitleFile = document.getElementById("subtitleinput").files[0];
-      if (!subtitleFile || !this.videoToRender) {
-        return toast.warning(!subtitleFile ? "Subtitle file is empty!" : "No video selected!");
+    
+      if (!audioFile || !subtitleFile) {
+        return toast.warning("Audio and subtitle files are required!");
       }
+    
       const data = new FormData();
-      data.append("videofile", this.videoToRender);
+      data.append("audiofile", audioFile);
       data.append("subtitlefile", subtitleFile);
-      axios.post(`${apiBaseUrl}/add_subtitles`, data)
+    
+      axios.post(`${apiBaseUrl}/generate_video`, data)
         .then(res => {
           if (res.data.status === "success") {
-            toast.success("Subtitles added!");
-            this.videoToRender = res.data.subtitled_videopath;
+            toast.success("Video generated!");
+            this.videoToRender = res.data.generated_videopath;
           } else {
-            toast.error(`Error adding subtitles: ${res.data.message}`);
+            toast.error(`Error generating video: ${res.data.message}`);
           }
         })
         .catch(() => toast.error("Error connecting to the server."));
-    },
+    }
   },
 };

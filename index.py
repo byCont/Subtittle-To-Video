@@ -5,7 +5,7 @@ from flask import request
 from flask import send_file
 from flask_cors import CORS
 
-from video_utils import addSubtitles, trimVideo, mergeVideos
+from video_utils import generateVideoFromAudioAndSubtitles, trimVideo, mergeVideos
 from config import config
 import os
 
@@ -85,24 +85,29 @@ def merged_render():
 			"message": "video merge failure: " + str(e),
 		}
 
-# Adds subtitles to a video
-@app.route('/add_subtitles', methods=['POST'])
-def add_subtitles():
+
+@app.route('/generate_video', methods=['POST'])
+def generate_video():
     try:
-        videofile = request.form['videofile']
+        audiofile = request.files['audiofile']
         subtitlefile = request.files['subtitlefile']
+
+        audio_path = config['video_savepath'] + audiofile.filename
         subtitle_path = config['video_savepath'] + subtitlefile.filename
+
+        audiofile.save(audio_path)
         subtitlefile.save(subtitle_path)
 
-        subtitled_videopath = addSubtitles(videofile, subtitle_path)
+        # Generar video
+        generated_video_path = generateVideoFromAudioAndSubtitles(audio_path, subtitle_path)
 
         return {
             "status": "success",
-            "message": "Subtitles added successfully",
-            "subtitled_videopath": subtitled_videopath
+            "message": "Video generated successfully",
+            "generated_videopath": generated_video_path
         }
     except Exception as e:
         return {
             "status": "error",
-            "message": "Failed to add subtitles: " + str(e)
+            "message": "Failed to generate video: " + str(e)
         }

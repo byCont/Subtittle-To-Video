@@ -1,36 +1,22 @@
 // frontend/src/components/VideoUpload.vue
 
 <template>
-  <div class="col-lg-5 video-upload-container">
+  <div class="col-lg-3 video-upload-container">
     <div class="form-group">
-      <!-- Drag and Drop Area -->
-      <div
-        class="drag-and-drop-area"
-        @dragover.prevent
-        @dragenter.prevent
-        @drop.prevent="handleDrop"
-      >
-        <p>Drag & Drop your video files here</p>
-        <span>or </span>
-        <label class="upload-label">
-          Add Video Clip
-          <input type="file" id="fileinput" accept="video/*" hidden @change="handleFileSelect" />
-        </label>
-      </div>
-
+     
       <div class="form-control-group">
         <label for="subtitleinput">Add Subtitles:</label>
         <input type="file" id="subtitleinput" accept=".srt,.ass" @change="handleFileSelect" />
       </div>
 
       <div class="form-control-group">
-        <input type="text" class="form-control" placeholder="Clip Name" id="clipname" />
+        <label for="audioinput">Add Audio:</label>
+        <input type="file" id="audioinput" accept="audio/*" />
+      </div>
+      <div class="form-buttons">
+        <button class="btn btn-primary" @click="$emit('generate-video')">Generate Video</button>
       </div>
 
-      <div class="form-buttons">
-        <button class="btn btn-secondary" @click="$emit('add-subtitles')">Add Subtitles</button>
-        <button class="btn btn-primary" @click="$emit('upload')">Upload</button>
-      </div>
     </div>
 
     <!-- Progress Bar -->

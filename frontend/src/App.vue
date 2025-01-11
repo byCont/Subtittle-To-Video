@@ -6,10 +6,10 @@
     <div class="container-fluid">
       <br><br>
       <CustomLoader v-if="loading" />
-      <div class="row px-4">
+      <div class="row">
         <VideoUpload 
           @upload="uploadVideoFile"
-          @add-subtitles="addSubtitles"
+          @generate-video="generateVideo"
           :upload-progress="uploadprogress" 
         />
         <VideoPreview 
