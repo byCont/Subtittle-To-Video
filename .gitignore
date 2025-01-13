@@ -1,6 +1,7 @@
 __pycache__/*
 venv/*
 clips/*
+background_videos/*
 *.mp3
 *.mp4
 frontend/node_modules
