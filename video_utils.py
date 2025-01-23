@@ -25,45 +25,37 @@ def mergeVideos(videoclip_filenames):
     return finalpath
 
 def generateVideoFromAudioAndSubtitles(audiofile: str, subtitlefile: str):
-    
     background_videos_folder = os.path.join(os.path.dirname(__file__), 'background_videos')
-    background_video_path = os.path.join(background_videos_folder, os.listdir(background_videos_folder)[4])
+    background_video_path = os.path.join(background_videos_folder, os.listdir(background_videos_folder)[0])
     
-    # Cargar el video de fondo
-    video = VideoFileClip(background_video_path)
-    
-    # Cargar el audio
+    # Obtener duración del audio
     audio = AudioFileClip(audiofile)
     audio_duration = audio.duration
-    
-    # Repetir el video de fondo para igualar la duración del audio
-    looped_video = video.loop(duration=audio_duration)
-    
-    # Agregar el audio al video repetido
-    looped_video = looped_video.set_audio(audio)
-    
-    # Guardar el video sin subtítulos temporalmente
-    temp_video_path = config['video_savepath'] + "temp_video_" + str(int(time.time())) + ".mp4"
-    looped_video.write_videofile(temp_video_path, codec="libx264", audio_codec="aac")
-    
-    # Generar el video final con subtítulos utilizando ffmpeg
+    audio.close()
+
+    # Generar video directamente con ffmpeg
     output_path = config['video_savepath'] + "generated_" + str(int(time.time())) + ".mp4"
     
     command = [
-        
         "ffmpeg",
-        "-i", temp_video_path,  # Cambiado para usar el video temporal con audio
+        "-stream_loop", "-1",  # Loop infinito para fondos cortos
+        "-t", str(audio_duration),  # Cortar a la duración del audio
+        "-i", background_video_path,
+        "-i", audiofile,
         "-vf", (
-            f"scale=1280:720,subtitles={subtitlefile}:force_style="
+            f"scale=1920:1080,fps=24,subtitles={subtitlefile}:force_style="
             "'FontName=Product Sans,FontSize=40,Alignment=2,MarginV=140,"
             "OutlineColour=&H80FFFFFF&,BorderStyle=1'"
         ),
-        "-c:v", "libx264",
-        "-preset", "medium",  # Balance entre calidad y velocidad de codificación
-        "-crf", "27",  # Factor de calidad constante (18-28 es un buen rango, menor = mejor calidad)
+        "-c:v", "libx265",
+        "-preset", "medium",
+        "-crf", "30",
         "-c:a", "aac",
-        "-b:a", "199k",
-        "-y",  # Sobrescribir archivo de salida si existe
+        "-b:a", "299k",
+        "-map", "0:v:0",  # Video del fondo
+        "-map", "1:a:0",  # Audio del input
+        "-shortest",
+        "-y",
         output_path
     ]
     
@@ -72,9 +64,5 @@ def generateVideoFromAudioAndSubtitles(audiofile: str, subtitlefile: str):
     except subprocess.CalledProcessError as e:
         print(f"Error al generar el video: {e}")
         raise
-    finally:
-        # Eliminar el video temporal
-        if os.path.exists(temp_video_path):
-            os.remove(temp_video_path)
     
     return output_path

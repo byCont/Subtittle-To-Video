@@ -6,7 +6,7 @@
      
       <div class="form-control-group">
         <label for="subtitleinput">Add Subtitles:</label>
-        <input type="file" id="subtitleinput" accept=".srt,.ass" @change="handleFileSelect" />
+        <input type="file" id="subtitleinput" accept=".srt,.ass, .lrc" @change="handleFileSelect" />
       </div>
 
       <div class="form-control-group">
