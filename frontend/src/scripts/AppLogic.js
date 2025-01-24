@@ -86,7 +86,7 @@ export default {
           this.loading = false;
         });
     },
-    generateVideo() {
+    generateVideo(params) {  // <- Recibir el objeto params
       const audioFile = document.getElementById("audioinput").files[0];
       const subtitleFile = document.getElementById("subtitleinput").files[0];
     
@@ -97,6 +97,9 @@ export default {
       const data = new FormData();
       data.append("audiofile", audioFile);
       data.append("subtitlefile", subtitleFile);
+      // Añadir nuevos parámetros al FormData
+      data.append("font_name", params.font);
+      data.append("font_size", params.fontSize);
     
       axios.post(`${apiBaseUrl}/generate_video`, data)
         .then(res => {

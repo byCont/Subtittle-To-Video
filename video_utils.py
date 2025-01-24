@@ -24,7 +24,12 @@ def mergeVideos(videoclip_filenames):
     final_clip.write_videofile(finalpath)
     return finalpath
 
-def generateVideoFromAudioAndSubtitles(audiofile: str, subtitlefile: str):
+def generateVideoFromAudioAndSubtitles(
+    audiofile: str, 
+    subtitlefile: str, 
+    font_name: str = "Product Sans",
+    font_size: int = 40               
+  ):
     background_videos_folder = os.path.join(os.path.dirname(__file__), 'background_videos')
     background_video_path = os.path.join(background_videos_folder, os.listdir(background_videos_folder)[0])
     
@@ -44,8 +49,8 @@ def generateVideoFromAudioAndSubtitles(audiofile: str, subtitlefile: str):
         "-i", audiofile,
         "-vf", (
             f"scale=1920:1080,fps=24,subtitles={subtitlefile}:force_style="
-            "'FontName=Product Sans,FontSize=40,Alignment=2,MarginV=140,"
-            "OutlineColour=&H80FFFFFF&,BorderStyle=1'"
+            f"'FontName={font_name},FontSize={font_size},Alignment=2,MarginV=140,"  # Variables dinámicas
+            "OutlineColour=&H80000000&,BorderStyle=1'"
         ),
         "-c:v", "libx265",
         "-preset", "medium",

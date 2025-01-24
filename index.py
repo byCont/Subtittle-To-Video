@@ -91,6 +91,10 @@ def generate_video():
     try:
         audiofile = request.files['audiofile']
         subtitlefile = request.files['subtitlefile']
+        
+        # Obtener parámetros de estilo
+        font_name = request.form.get('font_name', 'Product Sans')
+        font_size = int(request.form.get('font_size', 40))
 
         audio_path = config['video_savepath'] + audiofile.filename
         subtitle_path = config['video_savepath'] + subtitlefile.filename
@@ -98,8 +102,13 @@ def generate_video():
         audiofile.save(audio_path)
         subtitlefile.save(subtitle_path)
 
-        # Generar video
-        generated_video_path = generateVideoFromAudioAndSubtitles(audio_path, subtitle_path)
+        # Pasar parámetros a la función
+        generated_video_path = generateVideoFromAudioAndSubtitles(
+            audio_path, 
+            subtitle_path,
+            font_name=font_name,
+            font_size=font_size
+        )
 
         return {
             "status": "success",
