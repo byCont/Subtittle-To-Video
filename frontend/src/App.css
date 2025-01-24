@@ -5,11 +5,12 @@
   --secondary-color: #111827;
   --background-color: #374151;
   --text-color: #f9fafb;
-  --button-hover-color: #2563eb;
+   --button-hover-color: #25eba991; /*--button-hover-color: #2563eb; */
+  
 }
 
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: 'Poppins Regular', Arial, sans-serif;
   color: var(--text-color);
   background-color: var(--background-color);
   margin: 0;
@@ -19,7 +20,7 @@ body {
 .video-upload-container {
   background-color: var(--secondary-color);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: var(--text-color);
 }
@@ -48,7 +49,7 @@ input[type="number"] {
   background-color: var(--background-color);
   color: var(--text-color);
   border: 1px solid var(--primary-color);
-  border-radius: 4px;
+  border-radius: 15px;
   padding: 10px;
   font-size: 14px;
 }
@@ -58,7 +59,7 @@ input[type="file"]::file-selector-button {
   color: var(--text-color);
   border: none;
   padding: 8px 12px;
-  border-radius: 4px;
+  border-radius: 15px;
   cursor: pointer;
   font-size: 14px;
 }
@@ -72,7 +73,7 @@ button.btn {
   color: var(--text-color);
   border: none;
   padding: 10px 20px;
-  border-radius: 4px;
+  border-radius: 15px;
   font-size: 16px;
   cursor: pointer;
 }
