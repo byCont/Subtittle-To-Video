@@ -36,7 +36,7 @@
 
         <div class="form-control-group">
           <label>Text Size:</label>
-          <input type="number" v-model="fontSize" class="form-control" min="10" max="100" />
+          <input type="number" v-model="fontSize" class="form-control" min="10" max="200" />
         </div>
 
         <div class="form-buttons">
@@ -105,8 +105,8 @@ export default {
       this.$emit('audio-selected', event.target.files[0]);
     },
     handleGenerate() {
-      if (this.fontSize < 10 || this.fontSize > 100) {
-        alert("Tamaño de texto debe ser entre 10 y 100");
+      if (this.fontSize < 10 || this.fontSize > 201) {
+        alert("Tamaño de texto debe ser entre 10 y 200");
         return;
       }
 

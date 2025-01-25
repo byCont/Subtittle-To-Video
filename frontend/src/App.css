@@ -130,3 +130,8 @@ video {
   display: flex;
   justify-content: space-between;
 }
+
+.alert-warning {
+  border-radius: 15px;
+  margin-top: 15px;
+}

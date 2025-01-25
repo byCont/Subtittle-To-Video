@@ -4,5 +4,6 @@ clips/*
 background_videos/*
 *.mp3
 *.mp4
+*.ass
 frontend/node_modules
 templates/dist
