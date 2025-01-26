@@ -17,17 +17,6 @@
           :original-videos="originalvideos" 
         />        
       </div>
-      <VideoList 
-        :videos="videos"
-        @remove-video="removeVideo"
-        @set-render-video="setRenderVideo"
-        @reload-original-video="reloadOriginalVideo"
-        @edit-video-submit="editVideoSubmit"
-      />
-      <MergeClipsButton 
-        v-if="videos.length > 0"
-        @final-render="finalrender" 
-      />
     </div>
   </div>
 </template>
@@ -38,8 +27,6 @@
   import AppHeader from './components/AppHeader.vue';
   import VideoPreview from './components/VideoPreview.vue';
   import VideoUpload from './components/VideoUpload.vue';
-  import VideoList from './components/VideoList.vue';
-  import MergeClipsButton from './components/MergeClipsButton.vue';
   import './App.css';
 
   export default {
@@ -48,9 +35,7 @@
       CustomLoader, 
       AppHeader, 
       VideoPreview, 
-      VideoUpload, 
-      VideoList, 
-      MergeClipsButton 
+      VideoUpload
     },
   };
 </script>

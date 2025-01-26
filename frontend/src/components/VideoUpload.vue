@@ -72,7 +72,7 @@ export default {
   data() {
     return {
       selectedFont: 'Product Sans',
-      fontSize: 30,
+      fontSize: 95,
       fontOptions: [
           { name: 'Product Sans', value: 'Product Sans' }, // Fuente original
         { name: 'Arial', value: 'Arial' },
