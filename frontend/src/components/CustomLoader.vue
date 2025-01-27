@@ -46,6 +46,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'CustomLoader'
+}
+</script>
+
 <style scoped>
 :root {
   --primary-color: #1f2937;
@@ -73,7 +79,7 @@
   text-align: center;
   background: rgba(31, 41, 55, 0.8);
   padding: 2rem;
-  border-radius: 2rem;
+  border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   min-width: 300px;
   min-height: 100px;

@@ -1,0 +1,118 @@
+EFECTS .ASS
+
+Consideraciones de accesibilidad integradas:
+
+Velocidades controladas (300-500ms para cambios bruscos)
+
+Contrastes cromáticos mantenidos durante animaciones
+
+Sin parpadeos rápidos (evitando triggers epilépticos)
+
+Escalados máximos del 120% para mantener legibilidad
+
+Desenfoques controlados que no distorsionan los glifos
+
+Movimientos en ejes controlados (sin rotaciones bruscas)
+
+Tips profesionales:
+
+Para vídeos con ritmo rápido: Usar efectos 1, 5 y 9
+
+Para contenido corporativo: Efectos 2, 4 y 7
+
+Para musicales/artísticos: Efectos 3, 8 y 10
+
+Para documentales: Efectos 1, 6 y 9
+
+#####################################
+# 1. "RESPIRACIÓN LUMÍNICA" (Efecto de pulso con sombra dinámica)
+effect = r"\t(0,500,\fscx105\fscy105\1a&H20&\3a&H40&)\t(500,1000,\fscx100\fscy100\1a&H00&\3a&H00&)"
+
+# 2. "NEÓN ACTIVO" (Brillo progresivo con degradado)
+effect = r"\t(0,300,\c&H6CF7FF&\3c&H1A2CAC&\be5)\t(300,1000,\c&HFFFFFF&\3c&H000000&\be0)"
+
+# 3. "FLOTACIÓN CINÉTICA" (Movimiento 3D suave)
+effect = r"\t(0,1500,\frz-0.5\frx1\fscy98)\t(1500,3000,\frz0.5\frx-1\fscy102)"
+
+# 4. "ACORDEÓN CROMÁTICO" (Expansión vertical con cambio de color)
+effect = r"\t(0,400,\fscy120\c&HFFD700&)\t(400,800,\fscy90\c&H00BFFF&)\t(800,1200,\fscy100\c&HFFFFFF&)"
+
+# 5. "PERSISTENCIA RETINIANA" (Desenfoque de entrada/salida)
+effect = r"\t(0,300,\blur8\fscx110\fad(300,0))\t(300,2700,)\t(2700,3000,\blur15\fscx90\fad(0,300))"
+
+# 6. "GRAVEDAD ORGÁNICA" (Efecto bounce físico realista)
+effect = r"\t(0,200,\fscy115\fscx115\pos($centerX,$centerY-30))\t(200,400,\fscy95\fscx95\pos($centerX,$centerY+15))\t(400,600,\fscy102\fscx102\pos($centerX,$centerY))"
+
+# 7. "HOLOGRAMATRIX" (Simulación de proyección láser)
+effect = r"\t(0,1500,\alpha&H30&\fscx102\bord2\shad2\3c&H00FF00&)\t(1500,3000,\alpha&H00&\fscx98\bord0\shad0\3c&H000000&)"
+
+# 8. "FLUIDO TIPOGRAFICO" (Ondulación de caracteres)
+effect = r"\t(0,1000,\frx5\fry-5\fscx103\blur0.8)\t(1000,2000,\frx-5\fry5\fscx97)\t(2000,3000,\frx0\fry0\fscx100)"
+
+# 9. "ENERGÍA ACUMULATIVA" (Efecto carga progresiva)
+effect = r"\t(0,2500,\1a&H00&\3a&H00&\fscx100\fscy100\bord0)\t(2500,3000,\1a&HFF&\3a&HFF&\fscx150\fscy150\bord4)"
+
+# 10. "SINERGIA CROMOLUMINICA" (Arcoiris suave sincronizado)
+effect = r"\t(0,5000,\c&HFF6CFF&\3c&H6C6CFF&)\t(0,5000,1c&H6CFF6C&)\t(0,5000,2c&HFFFF6C&)"
+
+# 11. "AURORA BOREALIS" (Degradado dinámico con brillo polar)
+effect = r"\t(0,2000,\1c&H6CFFEC&\3c&H002A3C&\blur3\be2\fscx105)\t(2000,4000,\1c&HFFB86C&\3c&H3C1A00&)"
+
+# 12. "KINETIC TYPOGRAPHY" (Movimiento sincronizado con ritmo)
+effect = r"\t(0,250,\frz-2\pos($x+10,$y))\t(250,500,\frz2\pos($x-10,$y))\t(500,750,\frz0\pos($x,$y))"
+
+# 13. "HOLOGRAPHIC GLOW" (Efecto holograma con sombra 3D)
+effect = r"\t(0,1000,\3c&H00FF00&\4a&H64&\shad8\blur5)\t(1000,2000,\3c&H000000&\4a&H00&\shad0\blur0)"
+
+# 14. "MAGNETIC PULSE" (Atracción/repulsión de caracteres)
+effect = r"\t(0,300,\fax-0.1\fay0.1)\t(300,600,\fax0.05\fay-0.05)\t(600,900,\fax0\fay0)"
+
+# 15. "CELESTIAL ORBIT" (Rotación orbital alrededor de un punto)
+effect = r"\t(0,5000,\frx360\fry-360\fscx90\fscy90\pos(960,540))"
+
+# 16. "LIQUID MORPH" (Transición fluida entre escalados)
+effect = r"\t(0,800,\fscx115\fscy85\blur1)\t(800,1600,\fscx85\fscy115)\t(1600,2400,\fscx100\fscy100)"
+
+# 17. "NEON GLITCH" (Distorsión retro con parpadeo RGB)
+effect = r"\t(0,150,\c&HFF0000&\bord3)\t(150,300,\c&H00FF00&\bord0)\t(300,450,\c&H0000FF&\bord3)\t(450,600,\c&HFFFFFF&\bord1)"
+
+# 18. "GRAVITY DROP" (Caída con rebote realista)
+effect = r"\t(0,200,\pos($x,$y-80)\frx-15)\t(200,400,\pos($x,$y+30)\frx10)\t(400,600,\pos($x,$y)\frx0)"
+
+# 19. "PRISMATIC WAVE" (Onda de color horizontal)
+effect = r"\t(0,1000,\1c&HFF0000&\clip(0,0,960,1080))\t(0,1000,\1c&H0000FF&\clip(960,0,1920,1080))"
+
+# 20. "QUANTUM FADE" (Desintegración en partículas)
+effect = r"\t(0,500,\alpha&H00&\fscx130\blur10)\t(500,1000,\alpha&HFF&\fscx100\blur0)"
+
+ALTA MODULARIDAD
+
+# 21. "SOLAR FLARE" (Brillo radial desde el centro)
+effect = r"\t(0,800,\be10\fscx120\1a&H30&\3a&H60&)\t(800,1600,\be0\fscx100\1a&H00&\3a&H00&)"
+
+# 22. "PIXEL EVOLUTION" (Ensamblaje estilo 8-bit)
+effect = r"\t(0,400,\fscx10\fscy10\frx90\fry90)\t(400,800,\fscx100\fscy100\frx0\fry0)"
+
+# 23. "VELVET UNFOLD" (Revelado tipo seda)
+effect = r"\t(0,600,\clip(960,540,960,540)\bord4)\t(600,1200,\clip(0,0,1920,1080)\bord0)"
+
+# 24. "SONIC RIPPLE" (Ondas concéntricas)
+effect = r"\t(0,300,\blur8\fscx110\shad4)\t(300,600,\blur2\fscx100\shad0)"
+
+# 25. "CRYSTAL GROWTH" (Aparición geométrica)
+effect = r"\t(0,500,\frx45\fscx20\fscy20)\t(500,1000,\frx0\fscx100\fscy100)"
+
+# 26. "GALACTIC DRIFT" (Deriva espacial con estrellas)
+effect = r"\t(0,3000,\move(1920,540,-200,540,0,3000)\fry720\blur3)"
+
+# 27. "BINARY MATRIX" (Efecto código digital)
+effect = r"\t(0,100,\c&H00FF00&\bord0)\t(100,200,\c&H000000&\bord2)\t(200,300,\c&H00FF00&\bord0)"
+
+# 28. "TWILIGHT GRADIENT" (Transición día-noche)
+effect = r"\t(0,5000,\1c&HFFD700&\3c&H003C6C&\frx15\blur1)"
+
+# 29. "ELASTIC BOUNCE" (Elasticidad física)
+effect = r"\t(0,150,\fscx130\fscy70)\t(150,300,\fscx70\fscy130)\t(300,450,\fscx100\fscy100)"
+
+# 30. "PHANTOM ECHO" (Estela fantasma)
+effect = r"\t(0,1000,\alpha&H80&\fscx95\blur2)\t(1000,2000,\alpha&H00&\fscx100\blur0)"

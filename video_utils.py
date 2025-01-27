@@ -32,7 +32,7 @@ def generateVideoFromAudioAndSubtitles(
       "fps=24",
       f"subtitles={temp_ass}:force_style="
       f"'FontName={font_name},FontSize={font_size},"
-      "Alignment=10,Outline=2,Blur=15'"
+      "Outline=2,Blur=15'"
     ]
 
     command = [
