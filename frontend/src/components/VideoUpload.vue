@@ -20,7 +20,7 @@
         </div>
 
       <!-- Nuevos campos para fuente y tamaño -->
-        <div class="form-control-group">
+        <div class="form-control-group-text">
           <label>Font Style:</label>
           <select v-model="selectedFont" class="form-control">
             <option 
@@ -34,7 +34,15 @@
           </select>
         </div>
 
-        <div class="form-control-group">
+        <div class="form-control-group-text">
+          <label>Text Case:</label>
+          <select v-model="selectedTextCase" class="form-control">            
+            <option value="upper">AA</option>
+            <option value="lower">aa</option>
+          </select>
+        </div>
+
+        <div class="form-control-group-text">
           <label>Text Size:</label>
           <input type="number" v-model="fontSize" class="form-control" min="10" max="200" />
         </div>
@@ -73,6 +81,7 @@ export default {
     return {
       selectedFont: 'Product Sans',
       fontSize: 95,
+      selectedTextCase: 'lower',
       fontOptions: [
           { name: 'Product Sans', value: 'Product Sans' }, // Fuente original
         { name: 'Arial', value: 'Arial' },
@@ -112,7 +121,8 @@ export default {
 
       this.$emit('generate-video', {
         font: this.selectedFont,
-        fontSize: this.fontSize
+        fontSize: this.fontSize,
+        textCase: this.selectedTextCase
       });
     }
   }

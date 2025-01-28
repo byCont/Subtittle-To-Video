@@ -37,6 +37,17 @@ body {
   flex: 1 1 calc(50% - 20px);
 }
 
+.form-control-group-text select{
+  border-radius: 15px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 15px;
+  padding: 10px;
+  font-size: 14px;
+  justify-content: center;
+}
+
 label {
   margin-bottom: 8px;
   font-weight: bold;

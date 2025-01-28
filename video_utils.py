@@ -8,10 +8,11 @@ from convert_to_ass import convert_to_ass_with_effects
 import os
 
 def generateVideoFromAudioAndSubtitles(
-    audiofile: str, 
-    subtitlefile: str, 
+    audiofile: str,
+    subtitlefile: str,
     font_name: str = "Product Sans",
-    font_size: int = 30
+    font_size: int = 30,
+    text_case: str = 'lower'
 ):
     background_videos_folder = os.path.join(os.path.dirname(__file__), 'background_videos')
     background_video_path = os.path.join(background_videos_folder, os.listdir(background_videos_folder)[0])
@@ -24,7 +25,7 @@ def generateVideoFromAudioAndSubtitles(
     
     # Convertir subtítulos a ASS con efectos
     temp_ass = "temp_subtitles.ass"
-    convert_to_ass_with_effects(subtitlefile, temp_ass, font_name, font_size)
+    convert_to_ass_with_effects(subtitlefile, temp_ass, font_name, font_size, text_case)
     
     # Cadena de filtros simplificada
     vf_chain = [
@@ -42,8 +43,8 @@ def generateVideoFromAudioAndSubtitles(
       "-i", background_video_path,
       "-i", audiofile,
       "-vf", ",".join(vf_chain),
-      "-c:v", "libx265",
-      "-preset", "medium",
+      "-c:v", "libx264",
+      "-preset", "veryfast", #medium
       "-crf", "30",
       "-c:a", "aac",
       "-b:a", "299k",

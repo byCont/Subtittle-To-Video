@@ -47,9 +47,9 @@
 </template>
 
 <script>
-export default {
-  name: 'CustomLoader'
-}
+  export default {
+    name: 'CustomLoader'
+  }
 </script>
 
 <style scoped>
@@ -237,9 +237,3 @@ export default {
   }
 }
 </style>
-
-<script>
-export default {
-  name: 'CustomLoader'
-}
-</script>

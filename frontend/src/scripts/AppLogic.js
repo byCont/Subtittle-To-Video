@@ -32,6 +32,7 @@ export default {
       // Añadir nuevos parámetros al FormData
       data.append("font_name", params.font);
       data.append("font_size", params.fontSize);
+      data.append("text_case", params.textCase);
     
       axios.post(`${apiBaseUrl}/generate_video`, data)
         .then(res => {
