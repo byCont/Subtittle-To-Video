@@ -11,7 +11,7 @@ def generateVideoFromAudioAndSubtitles(
     audiofile: str,
     subtitlefile: str,
     font_name: str = "Product Sans",
-    font_size: int = 30,
+    font_size: int = 90,
     text_case: str = 'lower'
 ):
     background_videos_folder = os.path.join(os.path.dirname(__file__), 'background_videos')

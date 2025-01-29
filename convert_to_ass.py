@@ -1,5 +1,8 @@
 # convert_to_ass.py, Functions for convert sub to .ass
 
+import re
+
+
 def convert_to_ass_with_effects(subtitlefile, output_ass, font_name, font_size, text_case):
     try:
         with open(subtitlefile, 'r', encoding='utf-8') as f_in, \
@@ -51,34 +54,41 @@ TextCase: {text_case}
                     index += 1
 
             elif subtitlefile.endswith('.lrc'):
-                entries = []  # Almacenar todos los subtítulos temporalmente
-                index = 0
+              entries = []  # Almacenar todos los subtítulos temporalmente
+              index = 0
 
-                # Primera pasada: recolectar todos los tiempos y textos
-                for line in f_in:
-                    line = line.strip()
-                    if line.startswith('['):
-                        end_bracket = line.find(']')
-                        if end_bracket != -1:
-                            time_str = line[1:end_bracket]
-                            text = line[end_bracket+1:]
-                            start_time = convert_time_lrc(time_str)
-                            entries.append((start_time, text))
+              # Primera pasada: recolectar subtítulos válidos
+              for line in f_in:
+                  line = line.strip()
+                  if line.startswith('['):
+                      end_bracket = line.find(']')
+                      if end_bracket != -1:
+                          # Extraer tiempo y texto
+                          time_str = line[1:end_bracket]
+                          text = line[end_bracket+1:].lstrip()  # Eliminar espacios solo al inicio del texto
 
-                # Segunda pasada: calcular end_time dinámico
-                for i in range(len(entries)):
-                    start_time, text = entries[i]
+                          # Validar si el tiempo tiene formato correcto (ej: mm:ss.xx)
+                          if ":" in time_str and "." in time_str:  # Filtra solo tiempos válidos
+                              try:
+                                  start_time = convert_time_lrc(time_str)
+                                  entries.append((start_time, text))
+                              except:
+                                  print(f"Formato de tiempo inválido en línea: {line}")  # Debug opcional
 
-                    # Calcular end_time según criterio
-                    if i < len(entries) - 1:
-                        next_start = entries[i + 1][0]
-                        time_diff = next_start - start_time
-                        end_time = next_start if time_diff < 7 else start_time + 5
-                    else:
-                        end_time = start_time + 8  # Último subtítulo
-                    end_time +=1  # Añadir 2 segundos de margen
-                    write_ass_entry(f_out, start_time, end_time, [text], index, font_size, text_case)
-                    index += 1
+              # Segunda pasada: calcular end_time dinámico
+              for i in range(len(entries)):
+                  start_time, text = entries[i]
+
+                  if i < len(entries) - 1:
+                      next_start = entries[i + 1][0]
+                      time_diff = next_start - start_time
+                      end_time = next_start if time_diff < 7 else start_time + 5
+                  else:
+                      end_time = start_time + 8
+
+                  end_time +=1
+                  write_ass_entry(f_out, start_time, end_time, [text], index, font_size, text_case)
+                  index += 1
 
     except Exception as e:
         print(f"Error converting subtitles: {e}")
@@ -91,8 +101,9 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case):
     if text_case == 'upper':
         text = text.upper()
     elif text_case == 'lower':
-        text = text.lower()
+        text = text.capitalize()
 
+    text = re.sub(r'(\([^)]+\))', r'{\\c&H00FFFF&}\1{\\r}', text)
     if index % 2 == 0:
         # Posición superior personalizada: centro horizontal + margen vertical
         style_override = r"\an8\pos(960,220)\a6"  # Combinación an8 + pos + centrado horizontal

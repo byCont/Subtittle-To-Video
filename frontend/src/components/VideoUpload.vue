@@ -23,7 +23,8 @@
         <div class="form-control-group-text">
           <label>Font Style:</label>
           <select v-model="selectedFont" class="form-control">
-            <option 
+            <option
+              class="option" 
               v-for="font in fontOptions" 
               :key="font.value" 
               :value="font.value"
@@ -37,14 +38,22 @@
         <div class="form-control-group-text">
           <label>Text Case:</label>
           <select v-model="selectedTextCase" class="form-control">            
-            <option value="upper">AA</option>
-            <option value="lower">aa</option>
+            <option class="option" value="upper">AA</option>
+            <option class="option" value="lower">Aa</option>
           </select>
         </div>
 
         <div class="form-control-group-text">
           <label>Text Size:</label>
-          <input type="number" v-model="fontSize" class="form-control" min="10" max="200" />
+          <select v-model="fontSize" class="form-control">
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="90">90</option>
+            <option value="95">95</option>
+            <option value="110">110</option>
+            <option value="120">120</option>
+            <option value="130">130</option>
+          </select>
         </div>
 
         <div class="form-buttons">
@@ -83,18 +92,26 @@ export default {
       fontSize: 95,
       selectedTextCase: 'lower',
       fontOptions: [
-          { name: 'Product Sans', value: 'Product Sans' }, // Fuente original
+        { name: 'Product Sans', value: 'Product Sans' }, // Fuente original
+        { name: 'Product Sans Bold', value: 'Product Sans Bold' }, 
         { name: 'Arial', value: 'Arial' },
         { name: 'Poppins Regular', value: 'Poppins Regular' },
-        { name: 'Georgia', value: 'Georgia' },
-        { name: 'Helvetica', value: 'Helvetica' },
+        { name: 'Poppins Bold', value: 'Poppins Bold'},
+        { name: 'Poppins Italic', value: 'Poppins Italic'},
         { name: 'Impact', value: 'Impact' },
-        { name: 'Palatino', value: 'Palatino' },
         { name: 'Times New Roman', value: 'Times New Roman' },
         { name: 'Verdana', value: 'Verdana' },
-        { name: 'Courier New', value: 'Courier New' },
         { name: 'Comic Sans MS', value: 'Comic Sans MS' },
-        { name: 'Dancing Script Regular', value: 'Dancing Script Regular' }
+        { name: 'Dancing Script Regular', value: 'Dancing Script Regular' },
+        { name: 'Barriecito', value: 'Barriecito Regular'},
+        { name:  'Fauna One', value: 'Fauna One Regular'},
+        { name: 'Gread Vibes', value: 'Great Vibes Regular'},
+        { name: 'Lobster', value: 'Lobster Regular'},
+        { name: 'Permanent Marker',value: 'Permanent Marker Regular'},
+        { name: 'Satisfy', value: 'Satisfy Regular'},
+        { name: 'Alfa Slab One Regular', value: 'Alfa Slab One Regular' }, 
+        { name: 'Slabo', value: 'Slab 27px' }, 
+        { name: 'Special Elite Regular', value: 'Special Elite Regular'}
       ]
     };
   },
