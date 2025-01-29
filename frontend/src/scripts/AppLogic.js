@@ -33,6 +33,7 @@ export default {
       data.append("font_name", params.font);
       data.append("font_size", params.fontSize);
       data.append("text_case", params.textCase);
+      data.append("text_color", params.textColor);
     
       axios.post(`${apiBaseUrl}/generate_video`, data)
         .then(res => {

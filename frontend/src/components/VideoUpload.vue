@@ -56,6 +56,11 @@
           </select>
         </div>
 
+        <div class="form-control-group-text">
+          <label>Background:</label>
+          <input type="color" v-model="selectedColor" class="form-control">
+        </div>
+
         <div class="form-buttons">
           <button class="btn btn-success" @click="handleGenerate">Generate Video</button>
         </div>
@@ -136,10 +141,19 @@ export default {
         return;
       }
 
+      const hexToFFmpegColor = (hex, alpha = 1) => {
+        let r = hex.slice(1, 3);
+        let g = hex.slice(3, 5);
+        let b = hex.slice(5, 7);
+        let a = Math.round(alpha * 255).toString(16).padStart(2, '0'); // Convertir alfa (0-1) a 00-FF
+        return `#${r}${g}${b}${a}`;
+      };
+
       this.$emit('generate-video', {
         font: this.selectedFont,
         fontSize: this.fontSize,
-        textCase: this.selectedTextCase
+        textCase: this.selectedTextCase,
+        textColor: hexToFFmpegColor(this.selectedColor, 0.8) // Alfa a 50%
       });
     }
   }
