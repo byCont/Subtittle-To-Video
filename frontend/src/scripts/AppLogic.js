@@ -20,7 +20,8 @@ export default {
       this.loading= true;
       const audioFile = document.getElementById("audioinput").files[0];
       const subtitleFile = document.getElementById("subtitleinput").files[0];
-    
+      const imageFile = document.getElementById("imageinput").files[0];
+
       if (!audioFile || !subtitleFile) {
         this.loading= false;
         return toast.warning("Audio and subtitle files are required!");
@@ -29,6 +30,8 @@ export default {
       const data = new FormData();
       data.append("audiofile", audioFile);
       data.append("subtitlefile", subtitleFile);
+      if (imageFile) data.append("imagefile", imageFile);
+      
       // Añadir nuevos parámetros al FormData
       data.append("font_name", params.font);
       data.append("font_size", params.fontSize);

@@ -45,7 +45,14 @@ def generate_video():
     try:
         audiofile = request.files['audiofile']
         subtitlefile = request.files['subtitlefile']
+        imagefile = request.files.get('imagefile')
         
+        # Guardar imagen si está presente
+        image_path = None
+        if imagefile:
+            image_path = config['video_savepath'] + imagefile.filename
+            imagefile.save(image_path)
+						
         # Obtener parámetros de estilo
         font_name = request.form.get('font_name', 'Product Sans')
         font_size = int(request.form.get('font_size', 30))
@@ -66,6 +73,7 @@ def generate_video():
             font_size=font_size,
             text_case=text_case,
 						text_color=text_color,
+						image_path=image_path
         )
 
         return {

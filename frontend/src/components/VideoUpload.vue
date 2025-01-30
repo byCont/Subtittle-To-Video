@@ -19,6 +19,16 @@
           />
         </div>
 
+        <div class="form-control-group">
+          <label for="imageinput">Add Image (optional):</label>
+          <input 
+            type="file" 
+            id="imageinput" 
+            accept="image/*"
+            @change="handleImageSelect"
+          />
+        </div>
+
       <!-- Nuevos campos para fuente y tamaño -->
         <div class="form-control-group-text">
           <label>Font Style:</label>
@@ -135,11 +145,14 @@ export default {
     handleAudioSelect(event) {
       this.$emit('audio-selected', event.target.files[0]);
     },
+    handleImageSelect(event) {
+      this.$emit('image-selected', event.target.files[0]);
+    },
     handleGenerate() {
       if (this.fontSize < 10 || this.fontSize > 201) {
         alert("Tamaño de texto debe ser entre 10 y 200");
         return;
-      }
+      }    
 
       const hexToFFmpegColor = (hex, alpha = 1) => {
         let r = hex.slice(1, 3);
