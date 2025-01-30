@@ -153,7 +153,7 @@ export default {
         font: this.selectedFont,
         fontSize: this.fontSize,
         textCase: this.selectedTextCase,
-        textColor: hexToFFmpegColor(this.selectedColor, 0.8) // Alfa a 50%
+        textColor: hexToFFmpegColor(this.selectedColor, 0.8) // Alfa a 80%
       });
     }
   }

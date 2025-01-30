@@ -26,18 +26,16 @@ def generateVideoFromAudioAndSubtitles(
     
     # Convertir subtítulos a ASS con efectos
     temp_ass = "temp_subtitles.ass"
-    convert_to_ass_with_effects(subtitlefile, temp_ass, font_name, font_size, text_case)
+    convert_to_ass_with_effects(subtitlefile, temp_ass, font_name, font_size, text_case, text_color)
     
     # Cadena de filtros compleja para añadir el cuadro con el color recibido
     complex_filter = (
-        "[0:v]scale=1920:1080[scaled]; "  # Escalar el video de fondo
-        f"color=c={text_color}:s=1920x1080,format=rgba[color_layer]; "  # Generar capa con color personalizado
-        "[scaled][color_layer]overlay=format=auto[overlaid]; "  # Combinar capas
-        "[overlaid]fps=24[withfps]; "  # Ajustar FPS
-        f"[withfps]subtitles={temp_ass}:force_style="  # Añadir subtítulos
-        f"'FontName={font_name},FontSize={font_size},Outline=2,Blur=15'[final]" 
+      "[0:v]scale=1920:1080[scaled]; "
+      f"color=c={text_color}:s=1920x1080,format=yuva420p[color_layer]; "
+      "[scaled][color_layer]overlay=format=auto[overlaid]; "
+      "[overlaid]fps=24[withfps]; "
+      f"[withfps]subtitles={temp_ass}[final]"  # Sin force_style
     )
-
     command = [
         "ffmpeg",
         "-stream_loop", "-1",
@@ -58,8 +56,8 @@ def generateVideoFromAudioAndSubtitles(
     ]
     
     try:
-        subprocess.run(command, check=True)
-        os.remove(temp_ass)  # Limpiar archivo temporal
+      subprocess.run(command, check=True)
+        # os.remove(temp_ass)  # Limpiar archivo temporal
     except Exception as e:
         print(f"Error: {e}")
         raise

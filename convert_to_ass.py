@@ -1,9 +1,11 @@
 # convert_to_ass.py, Functions for convert sub to .ass
 
 import re
+import tkinter as tk
+from tkinter import messagebox
 
 
-def convert_to_ass_with_effects(subtitlefile, output_ass, font_name, font_size, text_case):
+def convert_to_ass_with_effects(subtitlefile, output_ass, font_name, font_size, text_case, text_color):
     try:
         with open(subtitlefile, 'r', encoding='utf-8') as f_in, \
              open(output_ass, 'w', encoding='utf-8') as f_out:
@@ -15,8 +17,9 @@ PlayResX: 1920
 PlayResY: 1080
 
 [V4+ Styles]
-Format: Name, Fontname, Fontsize, PrimaryColour, Bold, Italic, Outline
-Style: Default,{font_name},{font_size},&H00FFFFFF,0,0,1
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, AlphaLevel, Encoding
+Style: Default,{font_name},{font_size},&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,1,5,5,2,0,0,50,0,1
+Style: Secondary,{font_name},{font_size},&H00000000,&HFFFFFFFF,&H00FFFFFF,&HFFFFFFFF,0,0,1,5,5,2,0,0,50,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Text
@@ -35,7 +38,7 @@ TextCase: {text_case}
                             if start_time is None or end_time is None:  # Validación
                                 raise ValueError("Timestamp faltante")
                             end_time +=1  # Añadir 2 segundos de margen
-                            write_ass_entry(f_out, start_time, end_time, current_text, index, font_size, text_case)
+                            write_ass_entry(f_out, start_time, end_time, current_text, index, font_size, text_case, text_color)
                             index += 1
                             current_text = []
                         start_str, end_str = line.split('-->')
@@ -50,7 +53,7 @@ TextCase: {text_case}
                     if start_time is None or end_time is None:  # Validación
                         raise ValueError("Timestamp faltante en último subtítulo")
                     end_time += 1 # Añadir dos segundos de margen
-                    write_ass_entry(f_out, start_time, end_time, current_text, index, font_size, text_case)
+                    write_ass_entry(f_out, start_time, end_time, current_text, index, font_size, text_case, text_color)
                     index += 1
 
             elif subtitlefile.endswith('.lrc'):
@@ -87,14 +90,34 @@ TextCase: {text_case}
                       end_time = start_time + 8
 
                   end_time +=1
-                  write_ass_entry(f_out, start_time, end_time, [text], index, font_size, text_case)
+                  write_ass_entry(f_out, start_time, end_time, [text], index, font_size, text_case, text_color)
                   index += 1
 
     except Exception as e:
         print(f"Error converting subtitles: {e}")
         raise
 
-def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case):
+def convert_color(color):
+    # Asegurarse de que el color sea una cadena
+    if not isinstance(color, str):
+        raise ValueError("El color debe ser una cadena en formato #RRGGBBAA")
+    
+    # Eliminar el carácter '#' si está presente
+    if color.startswith('#'):
+        color = color[1:]
+    # Convertir de #RRGGBBAA a &HBBGGRR&
+    bb = color[4:6]
+    gg = color[2:4]
+    rr = color[0:2]
+    return f"{bb}{gg}{rr}"
+
+# def show_alert(message):
+#     root = tk.Tk()
+#     root.withdraw()  # Ocultar la ventana principal
+#     messagebox.showinfo("Información", message)
+#     root.destroy()
+    
+def write_ass_entry(f_out, start, end, text_lines, index, font_size,  text_case, text_color):
     effect = r"\t(\fscx100\fscy100,\fscx105\fscy105,\fscx110\fscy110)" # 0. ZOOM
     #effect = r"\t(0,1000,\frx5\fry-5\fscx103\blur0.8)\t(1000,2000,\frx-5\fry5\fscx97)\t(2000,3000,\frx0\fry0\fscx100)"#*8. "FLUIDO"
     text = r"\N".join(text_lines).replace(r"\N\N", r"\N")
@@ -103,7 +126,23 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case):
     elif text_case == 'lower':
         text = text.capitalize()
 
-    text = re.sub(r'(\([^)]+\))', r'{\\c&H00FFFF&}\1{\\r}', text)
+   # Mostrar el valor de text_color en una alerta
+   # show_alert(f"Valor de text_color: {text_color}")
+
+   # Convertir el color
+    if isinstance(text_color, str):
+        converted_color = convert_color(text_color)
+    else:
+        raise ValueError("El color debe ser una cadena en formato #RRGGBBAA")
+    
+    # text = re.sub(r'(\([^)]+\))', rf'{{\\c&H{converted_color}&}}\1{{\\r}}', text)
+        # Aplicar estilo al texto entre paréntesis: negro con sombra blanca
+    text = re.sub(
+      r'(\([^)]+\))', 
+      r'{\\3c&HFFFFFF&\\c&H00000&\\4c&HFFFFFF&\\shad5\\bord3}\\N\1{\\r}', 
+      text
+    )
+    
     if index % 2 == 0:
         # Posición superior personalizada: centro horizontal + margen vertical
         style_override = r"\an8\pos(960,220)\a6"  # Combinación an8 + pos + centrado horizontal
