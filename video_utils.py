@@ -13,7 +13,7 @@ def generateVideoFromAudioAndSubtitles(
     font_name: str = "Product Sans",
     font_size: int = 90,
     text_case: str = 'lower',
-    text_color: str = "#0000FF80",
+    text_color: str = "#00000000",
     image_path: str = None
 ):
     background_videos_folder = os.path.join(os.path.dirname(__file__), 'background_videos')
@@ -29,7 +29,8 @@ def generateVideoFromAudioAndSubtitles(
     temp_ass = "temp_subtitles.ass"
     convert_to_ass_with_effects(subtitlefile, temp_ass, font_name, font_size, text_case, text_color)
     
-    # Cadena de filtros compleja para añadir el cuadro con el color recibido
+    
+    # Construir comando base
     command = [
         "ffmpeg",
         "-stream_loop", "-1",
@@ -43,32 +44,46 @@ def generateVideoFromAudioAndSubtitles(
     if has_image:
         command.extend(["-i", image_path])
 
-    # Construir filtro complejo
-    complex_filter = [
-        "[0:v]scale=1920:1080[scaled];",
-        f"color=c={text_color}:s=1920x1080,format=yuva420p[color_layer];",
-        "[scaled][color_layer]overlay=format=auto[overlaid];",
-        "[overlaid]fps=24[withfps];"
-    ]
+    # Construir filtro complejo dinámicamente
+    complex_filter = []
+    
+    # 1. Escalar video de fondo
+    complex_filter.append("[0:v]scale=1920:1080[scaled];")
 
-    if has_image:
+    # 2. Capa de color (solo si no es transparente)
+    has_color = text_color != "#00000000"
+    if has_color:
         complex_filter.extend([
-          f"[2:v]loop=loop=-1:start=0:size=1,trim=duration={audio_duration},scale=-1:1080[img];",  # Escalar al alto del video
-          "[withfps][img]overlay=W-w:0:format=auto[with_image];",  # Posición derecha sin margen
-          f"[with_image]subtitles={temp_ass}[final];"
+            f"color=c={text_color}:s=1920x1080,format=yuva420p[color_layer];",
+            "[scaled][color_layer]overlay=format=auto[overlaid];",
+            "[overlaid]fps=24[withfps];"
         ])
     else:
-        complex_filter.append(f"[withfps]subtitles={temp_ass}[final];")
+        complex_filter.append("[scaled]fps=24[withfps];")
 
-    # Unir con ; y sin reemplazar espacios
-    complex_filter_str = "; ".join(complex_filter).replace(";;", ";")
+    # 3. Capa de imagen (si existe)
+    if has_image:
+        complex_filter.extend([
+            f"[2:v]loop=loop=-1:start=0:size=1,trim=duration={audio_duration},scale=-1:1080[img];",
+            "[withfps][img]overlay=W-w:0:format=auto[with_image];",
+            "[with_image]"
+        ])
+    else:
+        complex_filter.append("[withfps]")
 
+    # 4. Subtítulos (siempre al final)
+    complex_filter.append(f"subtitles={temp_ass}[final];")
+
+    # Unir filtros
+    complex_filter_str = " ".join(complex_filter).replace("; ", ";")
+
+    # Completar comando
     command.extend([
         "-filter_complex", complex_filter_str,
         "-map", "[final]",
         "-map", "1:a:0",
-        "-c:v", "libx264",
-        "-preset", "veryfast",
+        "-c:v", "libx265",
+        "-preset", "medium",
         "-crf", "30",
         "-c:a", "aac",
         "-b:a", "299k",

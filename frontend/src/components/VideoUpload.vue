@@ -63,12 +63,25 @@
             <option value="110">110</option>
             <option value="120">120</option>
             <option value="130">130</option>
+            <option value="130">150</option>            
+            <option value="130">165</option>
           </select>
         </div>
 
+        <!-- Cambiar el input a tipo text para permitir vacío -->
         <div class="form-control-group-text">
           <label>Background:</label>
-          <input type="color" v-model="selectedColor" class="form-control">
+          <input 
+            type="color" 
+            v-model="selectedColor" 
+            class="form-control"
+            :style="{ backgroundColor: selectedColor || 'transparent' }"
+          >
+          <input 
+            type="checkbox" 
+            v-model="enableBackgroundColor" 
+            class="form-checkbox"
+          > Enable Color
         </div>
 
         <div class="form-buttons">
@@ -106,27 +119,27 @@ export default {
       selectedFont: 'Product Sans',
       fontSize: 95,
       selectedTextCase: 'lower',
+      selectedColor: '#d6d6d6cc',  // Valor por defecto (gris translúcido)
+      enableBackgroundColor: false, // Nuevo flag
       fontOptions: [
         { name: 'Product Sans', value: 'Product Sans' }, // Fuente original
         { name: 'Product Sans Bold', value: 'Product Sans Bold' }, 
         { name: 'Arial', value: 'Arial' },
         { name: 'Poppins Regular', value: 'Poppins Regular' },
         { name: 'Poppins Bold', value: 'Poppins Bold'},
-        { name: 'Poppins Italic', value: 'Poppins Italic'},
         { name: 'Impact', value: 'Impact' },
         { name: 'Times New Roman', value: 'Times New Roman' },
         { name: 'Verdana', value: 'Verdana' },
         { name: 'Comic Sans MS', value: 'Comic Sans MS' },
         { name: 'Dancing Script Regular', value: 'Dancing Script Regular' },
         { name: 'Barriecito', value: 'Barriecito Regular'},
-        { name:  'Fauna One', value: 'Fauna One Regular'},
         { name: 'Gread Vibes', value: 'Great Vibes Regular'},
         { name: 'Lobster', value: 'Lobster Regular'},
         { name: 'Permanent Marker',value: 'Permanent Marker Regular'},
         { name: 'Satisfy', value: 'Satisfy Regular'},
         { name: 'Alfa Slab One Regular', value: 'Alfa Slab One Regular' }, 
-        { name: 'Slabo', value: 'Slab 27px' }, 
-        { name: 'Special Elite Regular', value: 'Special Elite Regular'}
+        { name: 'Special Elite Regular', value: 'Special Elite Regular'},
+        { name: 'Bebas Neue', value: 'Benas Neue Regular'}
       ]
     };
   },
@@ -166,7 +179,8 @@ export default {
         font: this.selectedFont,
         fontSize: this.fontSize,
         textCase: this.selectedTextCase,
-        textColor: hexToFFmpegColor(this.selectedColor, 0.8) // Alfa a 80%
+        textColor: hexToFFmpegColor(this.selectedColor, 0.8), // Alfa a 80%
+        enableBackgroundColor: this.enableBackgroundColor
       });
     }
   }

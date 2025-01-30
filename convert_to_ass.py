@@ -18,8 +18,8 @@ PlayResY: 1080
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, AlphaLevel, Encoding
-Style: Default,{font_name},{font_size},&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,1,5,5,2,0,0,50,0,1
-Style: Secondary,{font_name},{font_size},&H00000000,&HFFFFFFFF,&H00FFFFFF,&HFFFFFFFF,0,0,1,5,5,2,0,0,50,0,1
+Style: Default,{font_name},{font_size},&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,1,1,4,2,0,0,50,0,1
+Style: Secondary,{font_name},{font_size},&H00000000,&HFFFFFFFF,&H00FFFFFF,&HFFFFFFFF,0,0,1,5,4,2,0,0,50,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Text
@@ -135,14 +135,25 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size,  text_case,
     else:
         raise ValueError("El color debe ser una cadena en formato #RRGGBBAA")
     
-    # text = re.sub(r'(\([^)]+\))', rf'{{\\c&H{converted_color}&}}\1{{\\r}}', text)
-        # Aplicar estilo al texto entre paréntesis: negro con sombra blanca
+    #Texto entre parentesis, Chorus
     text = re.sub(
       r'(\([^)]+\))', 
-      r'{\\3c&HFFFFFF&\\c&H00000&\\4c&HFFFFFF&\\shad5\\bord3}\\N\1{\\r}', 
+      r'{\\3c&HFFFFFF&\\c&H00000&\\4c&HFFFFFF&\\shad3\\bord2}\\N\1{\\r}', 
       text
     )
-    
+    # Expresiones no cantadas, a resaltar
+    text = re.sub(
+      r'("([^"]+)")',
+      r'{\\3c&HFFFFFF&\\c&HB1B7F5&\\4c&H00000&\\shad3\\bord2}\\N\1{\\r}',
+      text
+    )
+    # entre * Titles
+    text = re.sub(
+        r'\*([^*]+)\*',
+        lambda match: r'{\\3c&HFFFF00&\c&HB1B7F5&\4c&H00000&\shad3\bord2}\N' + match.group(1).upper() + r'{\\r}',
+        text
+    )
+
     if index % 2 == 0:
         # Posición superior personalizada: centro horizontal + margen vertical
         style_override = r"\an8\pos(960,220)\a6"  # Combinación an8 + pos + centrado horizontal
