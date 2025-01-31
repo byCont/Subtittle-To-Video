@@ -139,7 +139,7 @@ export default {
         { name: 'Satisfy', value: 'Satisfy Regular'},
         { name: 'Alfa Slab One Regular', value: 'Alfa Slab One Regular' }, 
         { name: 'Special Elite Regular', value: 'Special Elite Regular'},
-        { name: 'Bebas Neue', value: 'Benas Neue Regular'}
+        { name: 'Bebas Neue', value: 'Bebas Neue Regular'}
       ]
     };
   },

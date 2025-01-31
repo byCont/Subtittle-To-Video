@@ -74,6 +74,8 @@ TextCase: {text_case}
                           if ":" in time_str and "." in time_str:  # Filtra solo tiempos válidos
                               try:
                                   start_time = convert_time_lrc(time_str)
+                                  # Aplicar delay de 1 segundo
+                                  start_time -= 1
                                   entries.append((start_time, text))
                               except:
                                   print(f"Formato de tiempo inválido en línea: {line}")  # Debug opcional
@@ -118,7 +120,7 @@ def convert_color(color):
 #     root.destroy()
     
 def write_ass_entry(f_out, start, end, text_lines, index, font_size,  text_case, text_color):
-    effect = r"\t(\fscx100\fscy100,\fscx105\fscy105,\fscx110\fscy110)" # 0. ZOOM
+    effect = r"\t(\fscx115\fscy115,\fscx110\fscy110,\fscx100\fscy100)" # 0. ZOOM
     #effect = r"\t(0,1000,\frx5\fry-5\fscx103\blur0.8)\t(1000,2000,\frx-5\fry5\fscx97)\t(2000,3000,\frx0\fry0\fscx100)"#*8. "FLUIDO"
     text = r"\N".join(text_lines).replace(r"\N\N", r"\N")
     if text_case == 'upper':
@@ -150,13 +152,13 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size,  text_case,
     # entre * Titles
     text = re.sub(
         r'\*([^*]+)\*',
-        lambda match: r'{\\3c&HFFFF00&\c&HB1B7F5&\4c&H00000&\shad3\bord2}\N' + match.group(1).upper() + r'{\\r}',
+        lambda match: r'{\\3c&H736556&\c&HB1EDF5&\4c&H00000&\shad3\bord2}\N' + match.group(1).upper() + r'{\\r}',
         text
     )
 
     if index % 2 == 0:
         # Posición superior personalizada: centro horizontal + margen vertical
-        style_override = r"\an8\pos(960,220)\a6"  # Combinación an8 + pos + centrado horizontal
+        style_override = r"\an8\pos(960,100)\a6"  # Combinación an8 + pos + centrado horizontal
     else:
         # Centro absoluto con margen dinámico
         style_override = r"\an5\mv50"  # Centro-central con margen inferior
