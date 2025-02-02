@@ -169,3 +169,128 @@ video {
   opacity: 0.85; 
   border-radius: 15px;
 }
+
+/*
+
+/* Estilo del botón "Edit Subtitles" */
+.btn-edit {
+  background-color: var(--primary-color); /* Color de fondo primario */
+  color: var(--text-color); /* Color de texto */
+  border: none;
+  border-radius: 15px; /* Bordes redondeados */
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Transición suave al pasar el mouse */
+}
+
+.btn-edit:hover {
+  background-color: var(--button-hover-color); /* Cambio de color al pasar el mouse */
+}
+
+.subtitle-input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espacio entre el campo de entrada y el botón */
+  border-radius: 15px;
+}
+
+/* into modal */
+.subtitle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.subtitle-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--secondary-color);
+  border-radius: 15px;
+  padding: 12px;
+  background-color: var(--primary-color);
+}
+
+.time-row {
+  display: flex;
+  gap: 10px;
+}
+
+.time-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--secondary-color);
+  border-radius: 15px;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  font-size: 0.9em;
+  text-align: center;
+}
+
+.text-input {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: 1px solid var(--background-color);
+  border-radius: 15px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: 1em;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+/* Mantener otros estilos */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  padding: 20px;
+  border-radius: 15px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.scrollable-container {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-actions button:hover {
+  background-color: var(--button-hover-color);
+}

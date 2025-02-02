@@ -3,12 +3,7 @@
 <template>
     <div class="col-lg-3 video-upload-container">
       <div class="form-group">
-     
-        <div class="form-control-group">
-          <label for="subtitleinput">Add Subtitles:</label>
-          <input type="file" id="subtitleinput" accept=".srt,.ass, .lrc" @change="handleFileSelect" />
-        </div>
-
+             
         <div class="form-control-group">
           <label for="audioinput">Add Audio:</label>
           <input 
@@ -18,6 +13,22 @@
             @change="handleAudioSelect"
           />
         </div>
+
+        <div class="form-control-group">
+          <label for="subtitleinput">Add Subtitles:</label>
+          <div class="subtitle-input-container">
+            <input type="file" id="subtitleinput" accept=".srt,.ass,.lrc" @change="handleFileSelect" />
+            <!-- Botón para editar subtítulos -->
+            <button v-if="subtitlesContent" class="btn btn-edit-small" @click="openSubtitleEditor">Edit</button>
+          </div>
+        </div>
+        <!-- Modal para editar subtítulos -->
+        <SubtitleEditorModal
+          :subtitles="subtitlesContent"
+          :showModal="showSubtitleEditor"
+          @save-changes="saveEditedSubtitles"
+          @close-modal="closeSubtitleEditor"
+        />
 
         <div class="form-control-group">
           <label for="imageinput">Add Image (optional):</label>
@@ -107,82 +118,113 @@
 </template>
 
 <script>
-import '../App.css';
+  import '../App.css';
+  import SubtitleEditorModal from './SubtitleEditorModal.vue';
 
-export default {
-  name: 'VideoUpload',
-  props: {
-    uploadProgress: Number,
-  },
-  data() {
-    return {
-      selectedFont: 'Product Sans',
-      fontSize: 95,
-      selectedTextCase: 'lower',
-      selectedColor: '#d6d6d6cc',  // Valor por defecto (gris translúcido)
-      enableBackgroundColor: false, // Nuevo flag
-      fontOptions: [
-        { name: 'Product Sans', value: 'Product Sans' }, // Fuente original
-        { name: 'Product Sans Bold', value: 'Product Sans Bold' }, 
-        { name: 'Arial', value: 'Arial' },
-        { name: 'Poppins Regular', value: 'Poppins Regular' },
-        { name: 'Poppins Bold', value: 'Poppins Bold'},
-        { name: 'Impact', value: 'Impact' },
-        { name: 'Times New Roman', value: 'Times New Roman' },
-        { name: 'Verdana', value: 'Verdana' },
-        { name: 'Comic Sans MS', value: 'Comic Sans MS' },
-        { name: 'Dancing Script Regular', value: 'Dancing Script Regular' },
-        { name: 'Barriecito', value: 'Barriecito Regular'},
-        { name: 'Gread Vibes', value: 'Great Vibes Regular'},
-        { name: 'Lobster', value: 'Lobster Regular'},
-        { name: 'Permanent Marker',value: 'Permanent Marker Regular'},
-        { name: 'Satisfy', value: 'Satisfy Regular'},
-        { name: 'Alfa Slab One Regular', value: 'Alfa Slab One Regular' }, 
-        { name: 'Special Elite Regular', value: 'Special Elite Regular'},
-        { name: 'Bebas Neue', value: 'Bebas Neue Regular'}
-      ]
-    };
-  },
-  methods: {
-    handleDrop(event) {
-      const files = event.dataTransfer.files;
-      this.processFiles(files);
+  export default {
+    name: 'VideoUpload',
+    components: {
+      SubtitleEditorModal,
     },
-    handleFileSelect(event) {
-      const files = event.target.files;
-      this.processFiles(files);
+    props: {
+      uploadProgress: Number,
     },
-    processFiles(files) {
-      this.$emit('files-selected', files);
-    },
-    handleAudioSelect(event) {
-      this.$emit('audio-selected', event.target.files[0]);
-    },
-    handleImageSelect(event) {
-      this.$emit('image-selected', event.target.files[0]);
-    },
-    handleGenerate() {
-      if (this.fontSize < 10 || this.fontSize > 201) {
-        alert("Tamaño de texto debe ser entre 10 y 200");
-        return;
-      }    
-
-      const hexToFFmpegColor = (hex, alpha = 1) => {
-        let r = hex.slice(1, 3);
-        let g = hex.slice(3, 5);
-        let b = hex.slice(5, 7);
-        let a = Math.round(alpha * 255).toString(16).padStart(2, '0'); // Convertir alfa (0-1) a 00-FF
-        return `#${r}${g}${b}${a}`;
+    data() {
+      return {
+        selectedFont: 'Product Sans',
+        fontSize: 95,
+        selectedTextCase: 'lower',
+        selectedColor: '#d6d6d6cc',  // Valor por defecto (gris translúcido)
+        enableBackgroundColor: false,
+        subtitlesContent: '',
+        showSubtitleEditor: false,
+        fontOptions: [
+          { name: 'Product Sans', value: 'Product Sans' }, // Fuente original
+          { name: 'Product Sans Bold', value: 'Product Sans Bold' }, 
+          { name: 'Arial', value: 'Arial' },
+          { name: 'Poppins Regular', value: 'Poppins Regular' },
+          { name: 'Poppins Bold', value: 'Poppins Bold'},
+          { name: 'Impact', value: 'Impact' },
+          { name: 'Times New Roman', value: 'Times New Roman' },
+          { name: 'Verdana', value: 'Verdana' },
+          { name: 'Comic Sans MS', value: 'Comic Sans MS' },
+          { name: 'Dancing Script Regular', value: 'Dancing Script Regular' },
+          { name: 'Barriecito', value: 'Barriecito Regular'},
+          { name: 'Gread Vibes', value: 'Great Vibes Regular'},
+          { name: 'Lobster', value: 'Lobster Regular'},
+          { name: 'Permanent Marker',value: 'Permanent Marker Regular'},
+          { name: 'Satisfy', value: 'Satisfy Regular'},
+          { name: 'Alfa Slab One Regular', value: 'Alfa Slab One Regular' }, 
+          { name: 'Special Elite Regular', value: 'Special Elite Regular'},
+          { name: 'Bebas Neue', value: 'Bebas Neue Regular'}
+        ]
       };
+    },
+    methods: {
+      handleDrop(event) {
+        const files = event.dataTransfer.files;
+        this.processFiles(files);
+      },
+      handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.subtitlesContent = e.target.result; // Guardar contenido del archivo
+            // No abrir el modal automáticamente
+          };
+          reader.readAsText(file);
+        }
+      }, 
+      openSubtitleEditor() {
+        this.showSubtitleEditor = true; // Abrir el modal manualmente
+      },  
+      processFiles(files) {
+        // Pasar los subtítulos editados junto con otros archivos
+        this.$emit('files-selected', { subtitles: this.subtitlesContent, files });
+      },
+      handleAudioSelect(event) {
+        this.$emit('audio-selected', event.target.files[0]);
+      },
+      handleImageSelect(event) {
+        this.$emit('image-selected', event.target.files[0]);
+      },
+      saveEditedSubtitles(editedContent) {
+        this.subtitlesContent = editedContent; // Guardar cambios realizados
+        this.closeSubtitleEditor(); // Cerrar el modal
+      },
+      closeSubtitleEditor() {
+        this.showSubtitleEditor = false; // Ocultar el modal
+      },
 
-      this.$emit('generate-video', {
-        font: this.selectedFont,
-        fontSize: this.fontSize,
-        textCase: this.selectedTextCase,
-        textColor: hexToFFmpegColor(this.selectedColor, 0.8), // Alfa a 80%
-        enableBackgroundColor: this.enableBackgroundColor
-      });
+      handleGenerate() {
+        if (!this.subtitlesContent) {
+          alert("Debes cargar o editar los subtítulos primero");
+          return;
+        }
+
+        if (this.fontSize < 10 || this.fontSize > 201) {
+          alert("Tamaño de texto debe ser entre 10 y 200");
+          return;
+        }   
+
+        const hexToFFmpegColor = (hex, alpha = 1) => {
+          let r = hex.slice(1, 3);
+          let g = hex.slice(3, 5);
+          let b = hex.slice(5, 7);
+          let a = Math.round(alpha * 255).toString(16).padStart(2, '0'); // Convertir alfa (0-1) a 00-FF
+          return `#${r}${g}${b}${a}`;
+        };
+
+        this.$emit('generate-video', {
+          font: this.selectedFont,
+          fontSize: this.fontSize,
+          textCase: this.selectedTextCase,
+          textColor: hexToFFmpegColor(this.selectedColor, 0.8),
+          enableBackgroundColor: this.enableBackgroundColor,
+          subtitles: this.subtitlesContent // Añadir los subtítulos al payload
+        });
+      }
     }
-  }
-};
+  };
 </script>

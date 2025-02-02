@@ -16,44 +16,53 @@ export default {
   },
   methods: {
     
-    generateVideo(params) {  // <- Recibir el objeto params
-      this.loading= true;
+    generateVideo(params) {
+      this.loading = true;
       const audioFile = document.getElementById("audioinput").files[0];
-      const subtitleFile = document.getElementById("subtitleinput").files[0];
       const imageFile = document.getElementById("imageinput").files[0];
-
-      if (!audioFile || !subtitleFile) {
-        this.loading= false;
-        return toast.warning("Audio and subtitle files are required!");
+    
+      // Validación CORREGIDA (usar params.subtitles en lugar de params.subtitleFile)
+      if (!audioFile || !params.subtitles) {
+        this.loading = false;
+        return toast.warning("¡Se requieren el archivo de audio y los subtítulos editados!");
       }
     
       const data = new FormData();
       data.append("audiofile", audioFile);
-      data.append("subtitlefile", subtitleFile);
+      
+      // Crear Blob con el contenido editado CORRECTO
+      const subtitleBlob = new Blob([params.subtitles], { type: 'text/plain' });
+      data.append("subtitlefile", subtitleBlob, 'subtitles.lrc'); // Nombre requerido por el backend
+    
       if (imageFile) data.append("imagefile", imageFile);
       
-      // Añadir nuevos parámetros al FormData
       data.append("font_name", params.font);
       data.append("font_size", params.fontSize);
       data.append("text_case", params.textCase);
-      if (params.enableBackgroundColor && params.textColor) {  // si esta activado el checkbox de background color
+      
+      if (params.enableBackgroundColor && params.textColor) {
         data.append("text_color", params.textColor);
       }
     
-      axios.post(`${apiBaseUrl}/generate_video`, data)
-        .then(res => {
-          if (res.data.status === "success") {
+      axios.post(`${apiBaseUrl}/generate_video`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(res => {
+        if (res.data.status === "success") {
             toast.success("Video generated!");
-            this.videoToRender = res.data.generated_videopath;
-          } else {
+          this.videoToRender = res.data.generated_videopath;
+        } else {
             toast.error(`Error generating video: ${res.data.message}`);
-          }
-          this.loading= false;
-        })         
-        .catch(() => {
-          toast.error("Error connecting to the server.");
-          this.loading= false;
-        });    
+        }
+        this.loading = false;
+      })         
+      .catch((error) => {
+        toast.error("Error de conexión con el servidor");
+        console.error('Detalles del error:', error);
+        this.loading = false;
+      });    
     }
   },
 };
