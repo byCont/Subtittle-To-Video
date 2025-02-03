@@ -2,10 +2,10 @@
 
 <template>
     <div class="col-lg-3 video-upload-container">
-      <div class="form-group">
+      <div class="form-group d-flex align-items-center justify-content-start gap-3">
              
         <div class="form-control-group">
-          <label for="audioinput">Add Audio:</label>
+          <label class="d-flex align-items-center justify-content-start gap-2" for="audioinput"><div v-html="icons.fileAudio"></div>Add Audio:</label>
           <input 
             type="file" 
             id="audioinput" 
@@ -15,11 +15,11 @@
         </div>
 
         <div class="form-control-group">
-          <label for="subtitleinput">Add Subtitles:</label>
+          <label class="d-flex align-items-center justify-content-start gap-2" for="subtitleinput"><div v-html="icons.addSubt"></div>Add Subtitles:</label>
           <div class="subtitle-input-container">
             <input type="file" id="subtitleinput" accept=".srt,.ass,.lrc" @change="handleFileSelect" />
             <!-- Botón para editar subtítulos -->
-            <button v-if="subtitlesContent" class="btn btn-edit-small" @click="openSubtitleEditor">Edit</button>
+            <button v-if="subtitlesContent" class="btn btn-edit-small d-flex align-items-center justify-content-start gap-2" @click="openSubtitleEditor"><div v-html="icons.editIcon"></div>Edit</button>
           </div>
         </div>
         <!-- Modal para editar subtítulos -->
@@ -31,7 +31,7 @@
         />
 
         <div class="form-control-group">
-          <label for="imageinput">Add Image (optional):</label>
+          <label class="d-flex align-items-center justify-content-start gap-2" for="imageinput"><div v-html="icons.addImage"></div>Add Image:</label>
           <input 
             type="file" 
             id="imageinput" 
@@ -42,7 +42,7 @@
 
       <!-- Nuevos campos para fuente y tamaño -->
         <div class="form-control-group-text">
-          <label>Font Style:</label>
+          <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.styleIcon"></div>Font Style:</label>
           <select v-model="selectedFont" class="form-control">
             <option
               class="option" 
@@ -57,7 +57,7 @@
         </div>
 
         <div class="form-control-group-text">
-          <label>Text Case:</label>
+          <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.caseIcon"></div>Text Case:</label>
           <select v-model="selectedTextCase" class="form-control">            
             <option class="option" value="upper">AA</option>
             <option class="option" value="lower">Aa</option>
@@ -65,7 +65,7 @@
         </div>
 
         <div class="form-control-group-text">
-          <label>Text Size:</label>
+          <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.fontIcon"></div>Text Size:</label>
           <select v-model="fontSize" class="form-control">
             <option value="25">25</option>
             <option value="30">30</option>
@@ -81,8 +81,9 @@
 
         <!-- Cambiar el input a tipo text para permitir vacío -->
         <div class="form-control-group-text">
-          <label>Background:</label>
-          <input 
+          <label class="d-flex align-items-center justify-content-start gap-1"> <div v-html="icons.colorIcon"></div>Background:</label>
+          <div class="d-flex gap-2">
+            <input 
             type="color" 
             v-model="selectedColor" 
             class="form-control"
@@ -92,7 +93,8 @@
             type="checkbox" 
             v-model="enableBackgroundColor" 
             class="form-checkbox"
-          > Enable Color
+          >Enable</div>
+          
         </div>
 
         <div class="form-buttons">
@@ -119,6 +121,7 @@
 
 <script>
   import '../App.css';
+  import {icons} from '../assets/icons.js';
   import SubtitleEditorModal from './SubtitleEditorModal.vue';
 
   export default {
@@ -137,6 +140,7 @@
         selectedColor: '#d6d6d6cc',  // Valor por defecto (gris translúcido)
         enableBackgroundColor: false,
         subtitlesContent: '',
+        icons,
         showSubtitleEditor: false,
         fontOptions: [
           { name: 'Product Sans', value: 'Product Sans' }, // Fuente original

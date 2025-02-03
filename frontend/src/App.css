@@ -1,12 +1,33 @@
-/* App.css */
+/* frontend/src/App.css */
 
 :root {
   --primary-color: #1f2937;
   --secondary-color: #111827;
   --background-color: #374151;
-  --text-color: #f9fafb;
-   --button-hover-color: #25eba991; /*--button-hover-color: #2563eb; */
-  
+  --text-color: #f9fafbe1;
+  --icon: #f9fafb5e;
+  --button-hover-color: #25eba991; /*--button-hover-color: #2563eb; */
+}
+
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--background-color);
+  border-radius: 20px;
+  border: 6px solid transparent;
+  height: 100px;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
 }
 
 body {
@@ -59,7 +80,6 @@ body {
   justify-content: center;
   overflow-y: scroll;
 }
-
 
 label {
   margin-bottom: 8px;
@@ -166,11 +186,9 @@ video {
 
 /* Toast AppLogic.js */
 .Toastify__toast {
-  opacity: 0.85; 
+  opacity: 0.85;
   border-radius: 15px;
 }
-
-/*
 
 /* Estilo del botón "Edit Subtitles" */
 .btn-edit {
@@ -212,25 +230,20 @@ video {
   background-color: var(--primary-color);
 }
 
-.time-row {
-  display: flex;
-  gap: 10px;
-}
-
 .time-input {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid var(--secondary-color);
+  padding: 3px 12px;
+  border: none;
   border-radius: 15px;
   background-color: var(--secondary-color);
   color: var(--text-color);
   font-size: 0.9em;
   text-align: center;
+  width: 30%;
 }
 
 .text-input {
   width: 100%;
-  min-height: 80px;
+  min-height: 50px;
   padding: 12px;
   border: 1px solid var(--background-color);
   border-radius: 15px;
@@ -261,16 +274,10 @@ video {
   padding: 20px;
   border-radius: 15px;
   width: 80%;
-  max-width: 600px;
+  max-width:550px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.scrollable-container {
-  max-height: 400px;
-  overflow-y: auto;
-  margin-bottom: 20px;
 }
 
 .modal-actions {
@@ -293,4 +300,34 @@ video {
 
 .modal-actions button:hover {
   background-color: var(--button-hover-color);
+}
+
+.delete-button {
+  background-color: var(--background-color);
+  border:none;
+  color: var(--icon);
+  padding: 3px 3px;
+  cursor: pointer;
+  border-radius: 100%;
+}
+.delete-button:hover {
+  background-color: #ff4d4d;
+  color: var(--secondary-color);
+}
+.add-button {
+  background-color: var(--background-color);
+  border:  none;
+  color: var(--icon);
+  padding: 3px 3px;
+  cursor: pointer;
+  border-radius: 100%;
+}
+.add-button:hover {
+  background-color:#34db42;
+  color: var(--secondary-color);
+}
+.scrollable-container {
+  max-height: 500px;
+  overflow-y: auto;
+  margin-bottom: 20px;
 }

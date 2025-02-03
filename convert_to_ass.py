@@ -113,11 +113,31 @@ def convert_color(color):
     rr = color[0:2]
     return f"{bb}{gg}{rr}"
 
-# def show_alert(message):
-#     root = tk.Tk()
-#     root.withdraw()  # Ocultar la ventana principal
-#     messagebox.showinfo("Información", message)
-#     root.destroy()
+# Función auxiliar para capitalizar ignorando los signos ¿ y ¡
+def custom_capitalize(text_with_parens):
+    """
+    Recibe una cadena que comienza con '(' y termina con ')'.
+    Si el contenido (excluyendo los paréntesis) empieza por '¡' o '¿',
+    se mantiene ese signo y se capitaliza el resto, es decir, se
+    convierte la primera letra posterior a ese signo a mayúscula.
+    """
+    # Extraer el contenido interno
+    content = text_with_parens[1:-1]
+    if not content:
+        return text_with_parens  # Si está vacío, se devuelve tal cual.
+    
+    # Si el primer carácter es uno de los signos especiales
+    if content[0] in ('¡', '¿'):
+        signo = content[0]
+        # Capitalizar el resto del contenido (si existe algo tras el signo)
+        if len(content) > 1:
+            nuevo_contenido = signo + content[1:].capitalize()
+        else:
+            nuevo_contenido = content
+    else:
+        nuevo_contenido = content.capitalize()
+    
+    return "(" + nuevo_contenido + ")"
     
 def write_ass_entry(f_out, start, end, text_lines, index, font_size,  text_case, text_color):
     effect = r"\t(\fscx115\fscy115,\fscx110\fscy110,\fscx100\fscy100)" # 0. ZOOM
@@ -128,19 +148,14 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size,  text_case,
     elif text_case == 'lower':
         text = text.capitalize()
 
-   # Mostrar el valor de text_color en una alerta
-   # show_alert(f"Valor de text_color: {text_color}")
-
-   # Convertir el color
-    if isinstance(text_color, str):
-        converted_color = convert_color(text_color)
-    else:
-        raise ValueError("El color debe ser una cadena en formato #RRGGBBAA")
+   
     
     #Texto entre parentesis, Chorus
     text = re.sub(
-      r'(\([^)]+\))', 
-      r'{\\3c&HFFFFFF&\\c&H00000&\\4c&HFFFFFF&\\shad3\\bord2}\\N\1{\\r}', 
+      r'(\([^)]+\))',
+      lambda match: (r'{\3c&HFFFFFF&\c&H00000&\4c&HFFFFFF&\shad3\bord2}\N'
+                      + custom_capitalize(match.group(1))
+                      + r'{\r}'),
       text
     )
     # Expresiones no cantadas, a resaltar
@@ -152,13 +167,20 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size,  text_case,
     # entre * Titles
     text = re.sub(
         r'\*([^*]+)\*',
-        lambda match: r'{\\3c&H736556&\c&HB1EDF5&\4c&H00000&\shad3\bord2}\N' + match.group(1).upper() + r'{\\r}',
+        lambda match: r'{\\3c&FFFFFF&\c&C0C0C0&\4c&H00000&\shad3\bord2}\N' + match.group(1).upper() + r'{\\r}',
+        text
+    )
+
+    # enfasis %
+    text = re.sub(
+        r'\%([^%]+)\%',
+        lambda match: r'{\\3c&H736556&\c&HB1EDF5&\4c&H00000&\shad3\bord2}\N' + match.group(1).capitalize() + r'{\\r}',
         text
     )
 
     if index % 2 == 0:
         # Posición superior personalizada: centro horizontal + margen vertical
-        style_override = r"\an8\pos(960,100)\a6"  # Combinación an8 + pos + centrado horizontal
+        style_override = r"\an8\pos(960,200)\a6"  # Combinación an8 + pos + centrado horizontal
     else:
         # Centro absoluto con margen dinámico
         style_override = r"\an5\mv50"  # Centro-central con margen inferior
