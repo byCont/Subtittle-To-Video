@@ -76,7 +76,7 @@ This project is a video editing application with a **Python/Flask backend** and 
 
 ### Access the Application
 - Frontend: [http://localhost:5173](http://localhost:5173)
-- Backend: [http://localhost:5000](http://localhost:5000)
+- Backend: open file start-server-windows.bat
 
 ---
 
