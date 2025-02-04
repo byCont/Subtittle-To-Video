@@ -1,14 +1,31 @@
 # convert_to_ass.py, Functions for convert sub to .ass
 
 import re
-import tkinter as tk
-from tkinter import messagebox
-
 
 def convert_to_ass_with_effects(subtitlefile, output_ass, font_name, font_size, text_case, text_color):
     try:
         with open(subtitlefile, 'r', encoding='utf-8') as f_in, \
              open(output_ass, 'w', encoding='utf-8') as f_out:
+
+            # Determinar estilos según text_color
+            if text_color == 'light':
+                default_primary = "&H00FFFFFF"
+                default_secondary_color = "&H000000FF"
+                default_outline = "&H00000000"
+                default_back = "&H00000000"
+                secondary_primary = "&H00000000"
+                secondary_secondary = "&HFFFFFFFF"
+                secondary_outline = "&H00FFFFFF"
+                secondary_back = "&HFFFFFFFF"
+            else:  # dark
+                default_primary = "&H00000000"
+                default_secondary_color = "&H00FFFFFF"
+                default_outline = "&H00FFFFFF"
+                default_back = "&H00FFFFFF"
+                secondary_primary = "&H00FFFFFF"
+                secondary_secondary = "&HFF000000"
+                secondary_outline = "&H00000000"
+                secondary_back = "&H00000000"
 
             # Cabecera ASS con parámetros dinámicos
             f_out.write(f"""[Script Info]
@@ -18,8 +35,8 @@ PlayResY: 1080
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, AlphaLevel, Encoding
-Style: Default,{font_name},{font_size},&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,1,1,4,2,0,0,50,0,1
-Style: Secondary,{font_name},{font_size},&H00000000,&HFFFFFFFF,&H00FFFFFF,&HFFFFFFFF,0,0,1,5,4,2,0,0,50,0,1
+Style: Default,{font_name},{font_size},{default_primary},{default_secondary_color},{default_outline},{default_back},0,0,1,1,4,2,0,0,50,0,1
+Style: Secondary,{font_name},{font_size},{secondary_primary},{secondary_secondary},{secondary_outline},{secondary_back},0,0,1,5,4,2,0,0,50,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Text
@@ -114,76 +131,99 @@ def convert_color(color):
     return f"{bb}{gg}{rr}"
 
 # Función auxiliar para capitalizar ignorando los signos ¿ y ¡
-def custom_capitalize(text_with_parens):
+def custom_capitalize(text):
     """
-    Recibe una cadena que comienza con '(' y termina con ')'.
-    Si el contenido (excluyendo los paréntesis) empieza por '¡' o '¿',
-    se mantiene ese signo y se capitaliza el resto, es decir, se
-    convierte la primera letra posterior a ese signo a mayúscula.
+    Recibe una cadena que puede estar encerrada entre paréntesis '(...)' o comillas "...".
+    Si el contenido (excluyendo los delimitadores) empieza por '¡' o '¿',
+    se mantiene ese signo y se capitaliza el resto, es decir, se convierte
+    la primera letra posterior a ese signo a mayúscula.
     """
-    # Extraer el contenido interno
-    content = text_with_parens[1:-1]
+    # Validar el formato de entrada
+    if text.startswith('(') and text.endswith(')'):
+        delimiter = '()'
+    elif text.startswith('"') and text.endswith('"'):
+        delimiter = '""'
+    else:
+        raise ValueError("La entrada debe estar encerrada entre paréntesis '(...)' o comillas '...'.")
+
+    # Extraer el contenido interno y eliminar espacios en blanco al inicio y final
+    content = text[1:-1].strip()
+
     if not content:
-        return text_with_parens  # Si está vacío, se devuelve tal cual.
-    
+        return text  # Si está vacío, se devuelve tal cual.
+
     # Si el primer carácter es uno de los signos especiales
     if content[0] in ('¡', '¿'):
         signo = content[0]
         # Capitalizar el resto del contenido (si existe algo tras el signo)
-        if len(content) > 1:
-            nuevo_contenido = signo + content[1:].capitalize()
-        else:
-            nuevo_contenido = content
+        resto = content[1:].lstrip()  # Eliminar espacios después del signo
+        nuevo_contenido = signo + (resto[0].upper() + resto[1:] if resto else "")
     else:
-        nuevo_contenido = content.capitalize()
+        # Capitalizar todo el contenido
+        nuevo_contenido = content[0].upper() + content[1:]
+
+    # Reconstruir la cadena con el delimitador original
+    if delimiter == '()':
+        return f"({nuevo_contenido})"
+    elif delimiter == '""':
+        return f'"{nuevo_contenido}"'
     
-    return "(" + nuevo_contenido + ")"
-    
-def write_ass_entry(f_out, start, end, text_lines, index, font_size,  text_case, text_color):
-    effect = r"\t(\fscx115\fscy115,\fscx110\fscy110,\fscx100\fscy100)" # 0. ZOOM
-    #effect = r"\t(0,1000,\frx5\fry-5\fscx103\blur0.8)\t(1000,2000,\frx-5\fry5\fscx97)\t(2000,3000,\frx0\fry0\fscx100)"#*8. "FLUIDO"
+def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, text_color):
+    effect = r"\t(\fscx115\fscy115,\fscx110\fscy110,\fscx100\fscy100)"
     text = r"\N".join(text_lines).replace(r"\N\N", r"\N")
+    
     if text_case == 'upper':
         text = text.upper()
-    elif text_case == 'lower':
+    elif text_case == 'capitalize':
         text = text.capitalize()
-
-   
     
-    #Texto entre parentesis, Chorus
-    text = re.sub(
-      r'(\([^)]+\))',
-      lambda match: (r'{\3c&HFFFFFF&\c&H00000&\4c&HFFFFFF&\shad3\bord2}\N'
-                      + custom_capitalize(match.group(1))
-                      + r'{\r}'),
-      text
-    )
-    # Expresiones no cantadas, a resaltar
-    text = re.sub(
-      r'("([^"]+)")',
-      r'{\\3c&HFFFFFF&\\c&HB1B7F5&\\4c&H00000&\\shad3\\bord2}\\N\1{\\r}',
-      text
-    )
-    # entre * Titles
-    text = re.sub(
-        r'\*([^*]+)\*',
-        lambda match: r'{\\3c&FFFFFF&\c&C0C0C0&\4c&H00000&\shad3\bord2}\N' + match.group(1).upper() + r'{\\r}',
-        text
-    )
-
-    # enfasis %
-    text = re.sub(
-        r'\%([^%]+)\%',
-        lambda match: r'{\\3c&H736556&\c&HB1EDF5&\4c&H00000&\shad3\bord2}\N' + match.group(1).capitalize() + r'{\\r}',
-        text
-    )
-
-    if index % 2 == 0:
-        # Posición superior personalizada: centro horizontal + margen vertical
-        style_override = r"\an8\pos(960,200)\a6"  # Combinación an8 + pos + centrado horizontal
+    # Determinar colores según text_color
+    if text_color == 'dark':
+        chorus_3c = '&HFFFFFF'
+        chorus_c = '&H734000'
+        quote_3c = '&HFFFFFF'
+        quote_c = '&H1E1E1E'
+        asterisk_3c = '&HFFFFFF'
+        asterisk_c = '&H1E1E1E'
+        percent_3c = '&HFFFFFF'
+        percent_c = '&H3C6E22'
     else:
-        # Centro absoluto con margen dinámico
-        style_override = r"\an5\mv50"  # Centro-central con margen inferior
+        chorus_3c = '&H000000'
+        chorus_c = '&H8BFFFF'
+        quote_3c = '&H000000'
+        quote_c = '&HB0C1EE'
+        asterisk_3c = '&H000000'
+        asterisk_c = '&HFFF1F2'
+        percent_3c = '&H000000'
+        percent_c = '&HFFE5C9'
+
+    # Aplicar estilos dinámicos
+    text = re.sub(
+        r'(\([^)]+\))', 
+        lambda match: fr'{{\3c{chorus_3c}&\c{chorus_c}&\4c{chorus_3c}&\shad3\bord2}}\N' + custom_capitalize(match.group(1)) + r'{\r}',
+        text
+    )
+    text = re.sub(
+        r'("([^"]+)")', 
+        lambda match: fr'{{\\3c{quote_3c}&\\c{quote_c}&\\4c{quote_3c}&\\shad3\\bord2}}\N' + custom_capitalize(match.group(1)) + r'{\\r}',
+        text
+    )
+    text = re.sub(
+        r'\*([^*]+)\*', 
+        lambda match: fr'{{\\3c{asterisk_3c}&\\c{asterisk_c}&\\4c{asterisk_3c}&\\shad3\\bord2}}\N' + match.group(1).upper() + r'{\\r}',
+        text
+    )
+    text = re.sub(
+        r'\%([^%]+)\%', 
+        lambda match: fr'{{\\3c{percent_3c}&\\c{percent_c}&\\4c{percent_3c}&\\shad3\\bord2}}\N' + match.group(1).capitalize() + r'{\\r}',
+        text
+    )
+
+    style_override = r"\blur15"
+    if index % 2 == 0:
+        style_override += r"\an8\pos(960,200)\a6"
+    else:
+        style_override += r"\an5\mv50"
 
     f_out.write(
         f"Dialogue: 0,{format_time_ass(start)},{format_time_ass(end)},Default,"

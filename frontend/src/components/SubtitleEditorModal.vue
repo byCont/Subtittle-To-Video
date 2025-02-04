@@ -53,7 +53,7 @@
     addNewLineAtIndex,
     deleteLine,
     splitLine,
-  } from '../scripts/subtitleUtils.js';
+  } from '../scripts/subtitleUtils';
   import {icons} from '../assets/icons.js';
   export default {
     name: 'SubtitleEditorModal',

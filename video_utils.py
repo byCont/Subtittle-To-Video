@@ -12,8 +12,9 @@ def generateVideoFromAudioAndSubtitles(
     subtitlefile: str,
     font_name: str = "Product Sans",
     font_size: int = 90,
-    text_case: str = 'lower',
-    text_color: str = "#00000000",
+    text_case: str = 'capitalize',
+    text_color: str = 'light',
+    bg_color: str = "#00000000",
     image_path: str = None
 ):
     background_videos_folder = os.path.join(os.path.dirname(__file__), 'background_videos')
@@ -51,10 +52,10 @@ def generateVideoFromAudioAndSubtitles(
     complex_filter.append("[0:v]scale=1920:1080[scaled];")
 
     # 2. Capa de color (solo si no es transparente)
-    has_color = text_color != "#00000000"
+    has_color = bg_color != "#00000000"
     if has_color:
         complex_filter.extend([
-            f"color=c={text_color}:s=1920x1080,format=yuva420p[color_layer];",
+            f"color=c={bg_color}:s=1920x1080,format=yuva420p[color_layer];",
             "[scaled][color_layer]overlay=format=auto[overlaid];",
             "[overlaid]fps=24[withfps];"
         ])

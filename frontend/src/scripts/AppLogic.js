@@ -39,9 +39,10 @@ export default {
       data.append("font_name", params.font);
       data.append("font_size", params.fontSize);
       data.append("text_case", params.textCase);
+      data.append("text_color", params.textColor);
       
-      if (params.enableBackgroundColor && params.textColor) {
-        data.append("text_color", params.textColor);
+      if (params.enableBackgroundColor && params.bgColor) {
+        data.append("bg_color", params.bgColor);
       }
     
       axios.post(`${apiBaseUrl}/generate_video`, data, {

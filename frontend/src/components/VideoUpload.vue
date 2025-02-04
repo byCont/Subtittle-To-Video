@@ -60,7 +60,15 @@
           <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.caseIcon"></div>Text Case:</label>
           <select v-model="selectedTextCase" class="form-control">            
             <option class="option" value="upper">AA</option>
-            <option class="option" value="lower">Aa</option>
+            <option class="option" value="capitalize">Aa</option>
+          </select>
+        </div>
+
+        <div class="form-control-group-text">
+          <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.fontColorIcon"></div>Text Color:</label>
+          <select v-model="selectedTextColor" class="form-control">            
+            <option class="option" value="light">Light</option>
+            <option class="option" value="dark">Dark</option>
           </select>
         </div>
 
@@ -136,7 +144,8 @@
       return {
         selectedFont: 'Product Sans',
         fontSize: 95,
-        selectedTextCase: 'lower',
+        selectedTextCase: 'capitalize',
+        selectedTextColor: 'light',
         selectedColor: '#d6d6d6cc',  // Valor por defecto (gris translúcido)
         enableBackgroundColor: false,
         subtitlesContent: '',
@@ -153,14 +162,19 @@
           { name: 'Verdana', value: 'Verdana' },
           { name: 'Comic Sans MS', value: 'Comic Sans MS' },
           { name: 'Dancing Script Regular', value: 'Dancing Script Regular' },
-          { name: 'Barriecito', value: 'Barriecito Regular'},
+          { name: 'Barrio Upper', value: 'Barrio Regular' },
+          { name: 'Barriecito', value: 'Barriecito Regular'},          
           { name: 'Gread Vibes', value: 'Great Vibes Regular'},
           { name: 'Lobster', value: 'Lobster Regular'},
           { name: 'Permanent Marker',value: 'Permanent Marker Regular'},
           { name: 'Satisfy', value: 'Satisfy Regular'},
           { name: 'Alfa Slab One Regular', value: 'Alfa Slab One Regular' }, 
           { name: 'Special Elite Regular', value: 'Special Elite Regular'},
-          { name: 'Bebas Neue', value: 'Bebas Neue Regular'}
+          { name: 'Bebas Neue', value: 'Bebas Neue Regular'},
+          { name: 'Sancreek', value: 'Sancreek Regular'},
+          { name: 'Garrison BOLD', value: 'Garrison ExtraBold Sans BOLD'},
+          { name: 'Akira', value: 'AkiraExpanded-SuperBold'}
+
         ]
       };
     },
@@ -224,7 +238,8 @@
           font: this.selectedFont,
           fontSize: this.fontSize,
           textCase: this.selectedTextCase,
-          textColor: hexToFFmpegColor(this.selectedColor, 0.8),
+          textColor: this.selectedTextColor,
+          bgColor: hexToFFmpegColor(this.selectedColor, 0.7),
           enableBackgroundColor: this.enableBackgroundColor,
           subtitles: this.subtitlesContent // Añadir los subtítulos al payload
         });

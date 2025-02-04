@@ -56,8 +56,9 @@ def generate_video():
         # Obtener parámetros de estilo
         font_name = request.form.get('font_name', 'Product Sans')
         font_size = int(request.form.get('font_size', 30))
-        text_case = request.form.get('text_case', 'lower')
-        text_color = request.form.get('text_color', '#00000000')
+        text_case = request.form.get('text_case', 'capitalize')
+        text_color = request.form.get('text_color', 'light')
+        bg_color = request.form.get('bg_color', '#00000000')
 
         audio_path = config['video_savepath'] + audiofile.filename
         subtitle_path = config['video_savepath'] + subtitlefile.filename
@@ -72,7 +73,8 @@ def generate_video():
             font_name=font_name,
             font_size=font_size,
             text_case=text_case,
-						text_color=text_color,
+            text_color=text_color,
+						bg_color=bg_color,
 						image_path=image_path
         )
 
