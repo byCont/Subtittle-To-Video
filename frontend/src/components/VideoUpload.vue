@@ -142,7 +142,7 @@
     },
     data() {
       return {
-        selectedFont: 'Product Sans',
+        selectedFont: 'Product Sans Bold',
         fontSize: 95,
         selectedTextCase: 'capitalize',
         selectedTextColor: 'light',
@@ -152,8 +152,7 @@
         icons,
         showSubtitleEditor: false,
         fontOptions: [
-          { name: 'Product Sans', value: 'Product Sans' }, // Fuente original
-          { name: 'Product Sans Bold', value: 'Product Sans Bold' }, 
+          { name: 'Product Sans Bold', value: 'Product Sans Bold' }, // default font
           { name: 'Arial', value: 'Arial' },
           { name: 'Poppins Regular', value: 'Poppins Regular' },
           { name: 'Poppins Bold', value: 'Poppins Bold'},

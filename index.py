@@ -54,7 +54,7 @@ def generate_video():
             imagefile.save(image_path)
 						
         # Obtener parámetros de estilo
-        font_name = request.form.get('font_name', 'Product Sans')
+        font_name = request.form.get('font_name', 'Product Sans Bold')
         font_size = int(request.form.get('font_size', 30))
         text_case = request.form.get('text_case', 'capitalize')
         text_color = request.form.get('text_color', 'light')

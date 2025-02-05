@@ -10,7 +10,7 @@ import os
 def generateVideoFromAudioAndSubtitles(
     audiofile: str,
     subtitlefile: str,
-    font_name: str = "Product Sans",
+    font_name: str = "Product Sans Bold",
     font_size: int = 90,
     text_case: str = 'capitalize',
     text_color: str = 'light',
@@ -85,7 +85,7 @@ def generateVideoFromAudioAndSubtitles(
         "-map", "1:a:0",
         "-c:v", "libx265",
         "-preset", "medium",
-        "-crf", "30",
+        "-crf", "28",
         "-c:a", "aac",
         "-b:a", "299k",
         "-shortest",
