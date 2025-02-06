@@ -228,6 +228,7 @@ video {
   border-radius: 15px;
   padding: 12px;
   background-color: var(--primary-color);
+  transition: background 0.3s ease;
 }
 
 .time-input {
@@ -331,3 +332,57 @@ video {
   overflow-y: auto;
   margin-bottom: 20px;
 }
+
+
+.active-entry {
+  background: #e3f2fd9a;
+  border-left: 4px solid #2196f3;
+}
+
+/* reproductor en modal */
+
+.preview-player {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #e3f2fd9a;
+  border-radius: 15px;
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.seek-bar {
+  flex-grow: 1;
+  height: 10px;
+  cursor: pointer;
+}
+
+.time-display {
+  font-family: poppins;
+  font-size: 1rem;
+  color: var(--secondary-color);
+  min-width: 50px;
+  text-align: center;
+}
+
+.play-button {
+  border: none;
+  background: var(--background-color);
+  color: white;
+  padding: 12px 12px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.play-button:hover {
+  background: var(--secondary-color);
+}
+
+.hidden-audio {
+  display: none;
+}
+/* end reproductor en modal */

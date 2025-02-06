@@ -1,12 +1,26 @@
 // frontend/src/components/SubtitleEditorModal.vue
 
+[file name]: SubtitleEditorModal.vue
+[file content begin]
 <template>
   <div v-if="showModal" class="modal-overlay">
     <div class="modal-content">
       <h3 class="d-flex align-items-center justify-content-start gap-2"><div v-html="icons.subtIcon"></div>Edit Subtitles</h3>
-      <div class="scrollable-container">
+      <SubtitlePreviewPlayer 
+        v-if="showModal && audioFile"
+        :subtitleEntries="subtitleEntries"
+        :audioFile="audioFile"
+        @time-update="handleTimeUpdate"
+      />
+      <div class="scrollable-container" ref="scrollContainer">
         <div class="subtitle-list">
-          <div v-for="(entry, index) in subtitleEntries" :key="index" class="subtitle-entry">
+          <div 
+            v-for="(entry, index) in subtitleEntries" 
+            :key="index" 
+            class="subtitle-entry"
+            :ref="el => { entryElements[index] = el }"
+            :class="{ 'active-entry': isActiveEntry(index) }"
+          >
             <div class="d-flex">
               <div class="d-flex align-items-center justify-content-start gap-2">
                 <input
@@ -55,16 +69,26 @@
     splitLine,
   } from '../scripts/subtitleUtils';
   import {icons} from '../assets/icons.js';
+  import SubtitlePreviewPlayer from './SubtitlePreviewPlayer.vue';
+  import { throttle } from 'lodash';
+  
   export default {
+    components: {
+      SubtitlePreviewPlayer,
+    },
     name: 'SubtitleEditorModal',
     props: {
       subtitles: String,
       showModal: Boolean,
+      audioFile: File,
     },
     data() {
       return {
         subtitleEntries: [],
         icons,
+        currentAudioTime: 0,
+        entryElements: [],
+        scrollThrottle: null
       };
     },
     watch: {
@@ -98,6 +122,51 @@
         const cursorPosition = event.target.selectionStart;
         this.subtitleEntries = splitLine(this.subtitleEntries, index, cursorPosition);
       },
+      handleTimeUpdate(time) {
+        this.currentAudioTime = time;
+        this.scrollToActiveEntry();
+      },
+      isActiveEntry(index) {
+        const entry = this.subtitleEntries[index];
+        return this.currentAudioTime >= entry.startTime && 
+               this.currentAudioTime <= entry.endTime;
+      },
+      scrollToActiveEntry: throttle(function() {
+        const activeIndex = this.subtitleEntries.findIndex(entry => 
+          this.currentAudioTime >= entry.startTime && 
+          this.currentAudioTime <= entry.endTime
+        );
+        
+        if (activeIndex !== -1 && this.entryElements[activeIndex]) {
+          const container = this.$refs.scrollContainer;
+          const element = this.entryElements[activeIndex];
+          const containerHeight = container.clientHeight;
+          const elementTop = element.offsetTop - container.offsetTop;
+          const elementBottom = elementTop + element.clientHeight;
+          
+          if (elementTop < container.scrollTop) {
+            container.scrollTo({
+              top: elementTop - 10,
+              behavior: 'smooth'
+            });
+          } else if (elementBottom > container.scrollTop + containerHeight) {
+            container.scrollTo({
+              top: elementBottom - containerHeight + 10,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }, 300),
     },
+    mounted() {
+      this.scrollThrottle = throttle(this.scrollToActiveEntry, 300);
+    },
+    beforeUnmount() {
+      if (this.scrollThrottle) {
+        this.scrollThrottle.cancel();
+      }
+    }
   };
 </script>
+
+[file content end]

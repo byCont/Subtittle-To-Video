@@ -26,6 +26,7 @@
         <SubtitleEditorModal
           :subtitles="subtitlesContent"
           :showModal="showSubtitleEditor"
+          :audioFile="selectedAudioFile"
           @save-changes="saveEditedSubtitles"
           @close-modal="closeSubtitleEditor"
         />
@@ -149,6 +150,7 @@
         selectedColor: '#d6d6d6cc',  // Valor por defecto (gris translúcido)
         enableBackgroundColor: false,
         subtitlesContent: '',
+        selectedAudioFile: null, //new field
         icons,
         showSubtitleEditor: false,
         fontOptions: [
@@ -201,6 +203,7 @@
         this.$emit('files-selected', { subtitles: this.subtitlesContent, files });
       },
       handleAudioSelect(event) {
+        this.selectedAudioFile = event.target.files[0];
         this.$emit('audio-selected', event.target.files[0]);
       },
       handleImageSelect(event) {
@@ -238,7 +241,7 @@
           fontSize: this.fontSize,
           textCase: this.selectedTextCase,
           textColor: this.selectedTextColor,
-          bgColor: hexToFFmpegColor(this.selectedColor, 0.7),
+          bgColor: hexToFFmpegColor(this.selectedColor, 0.8),
           enableBackgroundColor: this.enableBackgroundColor,
           subtitles: this.subtitlesContent // Añadir los subtítulos al payload
         });
