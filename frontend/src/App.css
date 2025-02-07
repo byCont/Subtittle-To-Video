@@ -388,3 +388,46 @@ video {
   display: none;
 }
 /* end reproductor en modal */
+
+/* modal pasteSubtitles */
+
+.modal {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  z-index: 1000;
+}
+.modal.show {
+  display: block;
+}
+
+.modal-content textarea {
+  border: none;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  border-radius: 15px;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  font-size: 1em;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.custom-btn {
+  background-color: var(--background-color); /* Quita el fondo */
+  border: var(--text-color); /* Color del borde */
+  transition: all ease-in-out 0.2s;
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  fill: var(--text-color);
+}
+
+.custom-btn:hover {
+  fill: var(--secondary-color);
+  transform: scale(1.3);
+}

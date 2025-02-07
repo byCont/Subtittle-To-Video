@@ -15,11 +15,20 @@
         </div>
 
         <div class="form-control-group">
+          
           <label class="d-flex align-items-center justify-content-start gap-2" for="subtitleinput"><div v-html="icons.addSubt"></div>Add Subtitles:</label>
           <div class="subtitle-input-container">
             <input type="file" id="subtitleinput" accept=".srt,.ass,.lrc" @change="handleFileSelect" />
             <!-- Botón para editar subtítulos -->
-            <button v-if="subtitlesContent" class="btn btn-edit-small d-flex align-items-center justify-content-start gap-2" @click="openSubtitleEditor"><div v-html="icons.editIcon"></div>Edit</button>
+            <PasteSubtitles @subtitles-pasted="handleSubtitlesPasted" />
+            <button 
+              title="Edit subtitles"
+              v-if="subtitlesContent && subtitlesContent.trim()" 
+              class="custom-btn d-flex align-items-center justify-content-start gap-2" 
+              @click="openSubtitleEditor"
+            >
+              <div v-html="icons.editIcon"></div>
+            </button>
           </div>
         </div>
         <!-- Modal para editar subtítulos -->
@@ -131,12 +140,14 @@
 <script>
   import '../App.css';
   import {icons} from '../assets/icons.js';
-  import SubtitleEditorModal from './SubtitleEditorModal.vue';
+  import SubtitleEditorModal from './SubtitleEditorModal.vue'
+  import PasteSubtitles from './PasteSubtitles.vue';
 
   export default {
     name: 'VideoUpload',
     components: {
       SubtitleEditorModal,
+      PasteSubtitles
     },
     props: {
       uploadProgress: Number,
@@ -184,20 +195,32 @@
         const files = event.dataTransfer.files;
         this.processFiles(files);
       },
+      handleSubtitlesPasted(file) {
+        this.readSubtitlesFile(file);
+      },
+      readSubtitlesFile(file){
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.subtitlesContent = e.target.result;
+          this.$emit('subtitles-loaded'); // Opcional: notificar carga
+        };
+        reader.onerror = (error) => {
+          console.error("Error reading file:", error);
+          alert("Error reading subtitles file");
+        };
+        reader.readAsText(file);
+      },
       handleFileSelect(event) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.subtitlesContent = e.target.result; // Guardar contenido del archivo
-            // No abrir el modal automáticamente
-          };
-          reader.readAsText(file);
-        }
+      const file = event.target.files[0];
+      if (file) this.readSubtitlesFile(file);
       }, 
       openSubtitleEditor() {
-        this.showSubtitleEditor = true; // Abrir el modal manualmente
-      },  
+        if (this.subtitlesContent && this.subtitlesContent.trim()) {
+          this.showSubtitleEditor = true;
+        } else {
+          alert("No subtitles available to edit.");
+        }
+      },
       processFiles(files) {
         // Pasar los subtítulos editados junto con otros archivos
         this.$emit('files-selected', { subtitles: this.subtitlesContent, files });
@@ -210,8 +233,12 @@
         this.$emit('image-selected', event.target.files[0]);
       },
       saveEditedSubtitles(editedContent) {
-        this.subtitlesContent = editedContent; // Guardar cambios realizados
-        this.closeSubtitleEditor(); // Cerrar el modal
+        if (editedContent && editedContent.trim()) {
+          this.subtitlesContent = editedContent;
+          this.closeSubtitleEditor();
+        } else {
+          alert("Edited subtitles cannot be empty.");
+        }
       },
       closeSubtitleEditor() {
         this.showSubtitleEditor = false; // Ocultar el modal
