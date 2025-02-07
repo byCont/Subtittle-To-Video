@@ -11,6 +11,7 @@
         :subtitleEntries="subtitleEntries"
         :audioFile="audioFile"
         @time-update="handleTimeUpdate"
+        ref="previewPlayer"
       />
       <div class="scrollable-container" ref="scrollContainer">
         <div class="subtitle-list">
@@ -20,6 +21,7 @@
             class="subtitle-entry"
             :ref="el => { entryElements[index] = el }"
             :class="{ 'active-entry': isActiveEntry(index) }"
+            @click="seekToSegment(index)"
           >
             <div class="d-flex">
               <div class="d-flex align-items-center justify-content-start gap-2">
@@ -128,8 +130,37 @@
       },
       isActiveEntry(index) {
         const entry = this.subtitleEntries[index];
+        const nextEntry = this.subtitleEntries[index + 1];
+        
+        // Si es el último segmento, solo comparamos con el tiempo de inicio
+        if (!nextEntry) {
+          return this.currentAudioTime >= entry.startTime;
+        }        
+        // Para los segmentos intermedios, usamos un rango exclusivo
         return this.currentAudioTime >= entry.startTime && 
-               this.currentAudioTime <= entry.endTime;
+              this.currentAudioTime < nextEntry.startTime;
+      },
+      
+      seekToSegment(index) {
+        const startTime = this.subtitleEntries[index].startTime;
+        if (this.$refs.previewPlayer) {
+          this.$refs.previewPlayer.seekToTime(startTime);
+        }
+        this.scrollToEntry(index);
+      },
+
+      scrollToEntry(index) {
+        if (this.entryElements[index]) {
+          const container = this.$refs.scrollContainer;
+          const element = this.entryElements[index];
+          const containerHeight = container.clientHeight;
+          const elementTop = element.offsetTop - container.offsetTop;
+          
+          container.scrollTo({
+            top: elementTop - containerHeight * 0.3,
+            behavior: 'smooth'
+          });
+        }
       },
       scrollToActiveEntry: throttle(function() {
         const activeIndex = this.subtitleEntries.findIndex(entry => 

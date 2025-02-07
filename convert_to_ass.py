@@ -91,7 +91,7 @@ TextCase: {text_case}
                               try:
                                   start_time = convert_time_lrc(time_str)
                                   # Aplicar delay de 1 segundo
-                                  # start_time -= 1
+                                  start_time -= 1
                                   entries.append((start_time, text))
                               except:
                                   print(f"Formato de tiempo inválido en línea: {line}")  # Debug opcional

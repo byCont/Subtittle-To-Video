@@ -228,7 +228,7 @@ video {
   border-radius: 15px;
   padding: 12px;
   background-color: var(--primary-color);
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, border-left 0.3s ease;
 }
 
 .time-input {
@@ -366,6 +366,8 @@ video {
   color: var(--secondary-color);
   min-width: 50px;
   text-align: center;
+  width: 60px; /* Ancho fijo */
+  display: inline-block; /* Asegura que el contenido esté centrado */
 }
 
 .play-button {
