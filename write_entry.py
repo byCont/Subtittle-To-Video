@@ -51,9 +51,9 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
 
     style_override = r"\blur15"
     if index % 2 == 0:
-        style_override += r"\an8\pos(960,200)\a6"
+        style_override += r"\an8\pos(960,100)\a6"
     else:
-        style_override += r"\an5\mv50"
+        style_override += r"\an8\pos(960,400)\a6"
 
     f_out.write(
         f"Dialogue: 0,{format_time_ass(start)},{format_time_ass(end)},Default,"
