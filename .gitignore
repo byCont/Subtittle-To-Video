@@ -2,6 +2,7 @@ __pycache__/*
 venv/*
 clips/*
 background_videos/*
+logo/*
 *.mp3
 *.mp4
 *.ass

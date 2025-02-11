@@ -59,28 +59,28 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     
     text = re.sub(  # Estilo para coros (entre paréntesis)
         r'(\([^)]+\))', 
-        lambda match: fr'{{\fnDancing Script Bold\\fs{font_size + 20}\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N'
+        lambda match: fr'{{\fnDancing Script Bold\\fs{font_size + 20}\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
                        + custom_capitalize(match.group(1), 'capitalize')
                        + r'{\\r}' + override_tags,
         text
-)
+    )
     text = re.sub(  # Estilo para citas (entre comillas)
         r'("([^"]+)")', 
-        lambda match: fr'{{\\3c{shadow_3c}&\\c{quote_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N' 
+        lambda match: fr'{{\\3c{shadow_3c}&\\c{quote_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
                       + custom_capitalize(match.group(1), text_case)
                       + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para asteriscos
         r'\*([^*]+)\*', 
-        lambda match: fr'{{\\3c{shadow_3c}&\\c{asterisk_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N' 
+        lambda match: r'\N' + fr'{{\fs{font_size + 50}\\3c{shadow_3c}&\\c{asterisk_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N'
                       + match.group(1).upper()
                       + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para porcentajes
         r'\%([^%]+)\%', 
-        lambda match: fr'{{\\3c{shadow_3c}&\\c{percent_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N' 
+        lambda match: fr'{{\\3c{shadow_3c}&\\c{percent_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
                       + custom_capitalize(f'%{match.group(1)}%', text_case)
                       + r'{\\r}' + override_tags,
         text
@@ -101,11 +101,6 @@ def format_time_ass(seconds):
 
 # Función auxiliar para capitalizar ignorando signos como ¿ y ¡
 def custom_capitalize(text, text_case):
-    """
-    Capitaliza el texto dentro de delimitadores ()/""/%% según text_case.
-    - Elimina los delimitadores % si están presentes.
-    - Respeta signos iniciales como ¡/¿.
-    """
     delimiter = None
     if text.startswith('(') and text.endswith(')'):
         delimiter = '()'
@@ -115,25 +110,31 @@ def custom_capitalize(text, text_case):
         delimiter = '%%'
     else:
         return text  # No es un delimitador válido
+
+    content = text[1:-1]
     
-    content = text[1:-1].strip()
-    if not content:
-        return text  # Contenido vacío
-    
+    # Proteger la secuencia \N usando un marcador
+    marker = '__NL__'
+    protected_content = content.replace(r'\N', marker)
+
     if text_case == 'upper':
-        nuevo_contenido = content.upper()
+        nuevo_contenido = protected_content.upper()
     elif text_case == 'capitalize':
-        if content[0] in ('¡', '¿'):
-            signo = content[0]
-            resto = content[1:].lstrip()
-            nuevo_contenido = signo + (resto[0].upper() + resto[1:] if resto else "")
+        if protected_content and protected_content[0] in ('¡', '¿'):
+            signo = protected_content[0]
+            resto = protected_content[1:]
+            nuevo_contenido = signo + (resto[0].upper() + resto[1:].lower() if resto else "")
         else:
-            nuevo_contenido = content[0].upper() + content[1:].lower()
+            nuevo_contenido = protected_content[0].upper() + protected_content[1:].lower()
     else:
-        nuevo_contenido = content  # Sin cambios
-    
+        nuevo_contenido = protected_content  # Sin cambios
+
+    # Restaurar el marcador; como lower() puede haberlo convertido a minúsculas,
+    # reemplazamos ambas versiones
+    nuevo_contenido = nuevo_contenido.replace(marker, r'\N').replace(marker.lower(), r'\N')
+
     if delimiter == '%%':
-        return nuevo_contenido  # Eliminar %%
+        return nuevo_contenido  # Para porcentajes, se eliminan los delimitadores
     elif delimiter == '()':
         return f"({nuevo_contenido})"
     elif delimiter == '""':

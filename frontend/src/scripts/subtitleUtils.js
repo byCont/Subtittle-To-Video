@@ -74,6 +74,29 @@ export function addNewLineAtIndex(entries, index) {
   return entries;
 }
 
+export function joinSegments(entries, index) {
+  // No se puede unir el primer segmento (índice 0) o si el índice es inválido
+  if (index <= 0 || index >= entries.length) return entries;
+
+  const previousEntry = entries[index - 1];
+  const currentEntry = entries[index];
+
+  // Une los textos. Si ambos tienen contenido, se insertará un salto de línea entre ellos.
+  previousEntry.text =
+    previousEntry.text +
+    (previousEntry.text && currentEntry.text ? "\n" : "") +
+    currentEntry.text;
+
+  // Extiende el tiempo final del segmento anterior para abarcar el actual
+  previousEntry.endTime = currentEntry.endTime;
+
+  // Elimina el segmento actual del arreglo
+  entries.splice(index, 1);
+
+  return entries;
+}
+
+
 export function deleteLine(entries, index) {
   entries.splice(index, 1);
   return entries;

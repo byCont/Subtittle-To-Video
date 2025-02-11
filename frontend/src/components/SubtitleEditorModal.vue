@@ -39,8 +39,9 @@
                 />
               </div>
               
-              <div class="d-flex align-items-center justify-content-end gap-2">              
+              <div class="d-flex align-items-center justify-content-end gap-3">              
                 <button @click="addNewLineAtIndex(index + 1)" class="add-button"><div v-html="icons.deleteIcon"></div></button>
+                <button v-if="index > 0" @click="joinSegments(index)" class="join-button"><div v-html="icons.joinIcon"></div></button>
                 <button @click="deleteLine(index)" class="delete-button"><div v-html="icons.addIcon"></div></button>
               </div>
             </div>
@@ -68,6 +69,7 @@
     addNewLineAtIndex,
     deleteLine,
     splitLine,
+    joinSegments,
   } from '../scripts/subtitleUtils';
   import {icons} from '../assets/icons.js';
   import SubtitlePreviewPlayer from './SubtitlePreviewPlayer.vue';
@@ -95,7 +97,12 @@
     watch: {
       subtitles(newVal) {
         if (newVal) {
-          this.subtitleEntries = parseSubtitles(newVal);
+          const parsed = parseSubtitles(newVal);
+          // Para cada entrada, reemplazamos "\n" (literal) por un salto de línea real
+          this.subtitleEntries = parsed.map(entry => ({
+            ...entry,
+            text: entry.text.replace(/\\n/g, '\n')
+          }));
         }
       },
     },
@@ -129,6 +136,9 @@
       },
       addNewLineAtIndex(index) {
         this.subtitleEntries = addNewLineAtIndex(this.subtitleEntries, index);
+      },
+      joinSegments(index) {
+        this.subtitleEntries = joinSegments(this.subtitleEntries, index);
       },
       deleteLine(index) {
         this.subtitleEntries = deleteLine(this.subtitleEntries, index);

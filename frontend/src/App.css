@@ -303,6 +303,19 @@ video {
   background-color: var(--button-hover-color);
 }
 
+.join-button {
+  background-color: var(--background-color);
+  border:none;
+  color: var(--icon);
+  padding: 3px 3px;
+  cursor: pointer;
+  border-radius: 100%;
+}
+.join-button:hover {
+  background-color: #4dbeff;
+  color: var(--secondary-color);
+}
+
 .delete-button {
   background-color: var(--background-color);
   border:none;
