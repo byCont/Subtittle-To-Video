@@ -44,12 +44,11 @@
                 <button @click="deleteLine(index)" class="delete-button"><div v-html="icons.addIcon"></div></button>
               </div>
             </div>
-            <input
-              type="text"
+            <textarea
               v-model="entry.text"
-              @keydown.enter.prevent="splitLine(index, $event)"
+              @keydown.enter="handleTextareaEnter(index, $event)"
               class="text-input"
-            />            
+            ></textarea>          
           </div>
         </div>
       </div>
@@ -107,10 +106,24 @@
       },
       saveChanges() {
         const updatedSubtitles = this.subtitleEntries
-          .map((entry) => `[${formatTime(entry.startTime)}]${entry.text}`)
+          .map((entry) => {
+            const timeTag = `[${this.formatTime(entry.startTime)}]`;
+            // Reemplazar saltos de línea reales por "\n" escapado
+            const escapedText = entry.text.replace(/\n/g, '\\n'); 
+            return `${timeTag}${escapedText}`;
+          })
           .join('\n');
+        
         this.$emit('save-changes', updatedSubtitles);
       },
+      handleTextareaEnter(index, event) {
+        if (event.shiftKey) {
+          event.preventDefault();
+          this.splitLine(index, event);
+        }
+        // Enter sin Shift inserta nueva línea (comportamiento por defecto)
+      },
+  
       closeModal() {
         this.$emit('close-modal');
       },

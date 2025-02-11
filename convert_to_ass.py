@@ -43,72 +43,95 @@ TextCase: {text_case}
 """)
 
             if subtitlefile.endswith('.srt'):
-                lines = f_in.readlines()
-                current_text = []
-                start_time = end_time = None
-                index = 0
-                for line in lines:
-                    line = line.strip()
-                    if '-->' in line:
-                        if current_text:
-                            if start_time is None or end_time is None:  # Validación
-                                raise ValueError("Timestamp faltante")
-                            end_time +=1  # Añadir 2 segundos de margen
-                            write_ass_entry(f_out, start_time, end_time, current_text, index, font_size, text_case, text_color)
-                            index += 1
-                            current_text = []
-                        start_str, end_str = line.split('-->')
-                        start_time = convert_time_srt(start_str.strip())
-                        end_time = convert_time_srt(end_str.strip())
-                    elif line.isdigit() or not line:
-                        continue
-                    else:
-                        current_text.append(line)
-                # Bloque final
-                if current_text:
-                    if start_time is None or end_time is None:  # Validación
-                        raise ValueError("Timestamp faltante en último subtítulo")
-                    end_time += 1 # Añadir dos segundos de margen
-                    write_ass_entry(f_out, start_time, end_time, current_text, index, font_size, text_case, text_color)
-                    index += 1
+              # Leer todo el contenido y separar por bloques (cada bloque corresponde a un subtítulo)
+              content = f_in.read().strip()
+              blocks = content.split('\n\n')
+              index = 0
+              for block in blocks:
+                  # Separar las líneas de cada bloque sin eliminar los saltos de línea internos
+                  lines = block.splitlines()
+                  if len(lines) < 3:
+                      continue  # Se espera al menos: índice, timestamp y una línea de texto
+                  # La primera línea es el número del subtítulo (se ignora)
+                  # La segunda línea contiene el timestamp
+                  timestamp_line = lines[1]
+                  try:
+                      start_str, end_str = timestamp_line.split('-->')
+                  except ValueError:
+                      raise ValueError(f"Error en el formato de tiempo en el bloque:\n{block}")
+                  start_time = convert_time_srt(start_str.strip())
+                  end_time = convert_time_srt(end_str.strip())
+                  # El resto de las líneas son el texto del subtítulo (se conserva cada línea)
+                  text_lines = lines[2:]
+                  # Opcional: añadir un margen (por ejemplo, 1 segundo) al tiempo de finalización
+                  end_time += 1
+                  write_ass_entry(f_out, start_time, end_time, text_lines, index, font_size, text_case, text_color)
+                  index += 1
 
             elif subtitlefile.endswith('.lrc'):
-              entries = []  # Almacenar todos los subtítulos temporalmente
+              entries = []
               index = 0
-
-              # Primera pasada: recolectar subtítulos válidos
+              current_entry = None
+              
               for line in f_in:
-                  line = line.strip()
+                  line = line.rstrip("\n")  # Quitar salto de línea final
+                  
                   if line.startswith('['):
+                      # 1. Guardar entrada anterior si existe
+                      if current_entry:
+                          entries.append(current_entry)
+                      
                       end_bracket = line.find(']')
                       if end_bracket != -1:
-                          # Extraer tiempo y texto
                           time_str = line[1:end_bracket]
-                          text = line[end_bracket+1:].lstrip()  # Eliminar espacios solo al inicio del texto
-
-                          # Validar si el tiempo tiene formato correcto (ej: mm:ss.xx)
-                          if ":" in time_str and "." in time_str:  # Filtra solo tiempos válidos
-                              try:
-                                  start_time = convert_time_lrc(time_str)
-                                  # Aplicar delay de 1 segundo
-                                  start_time -= 1
-                                  entries.append((start_time, text))
-                              except:
-                                  print(f"Formato de tiempo inválido en línea: {line}")  # Debug opcional
-
-              # Segunda pasada: calcular end_time dinámico
-              for i in range(len(entries)):
-                  start_time, text = entries[i]
-
+                          # 2. Extraer texto y procesar escapes
+                          raw_text = line[end_bracket+1:].lstrip()
+                          text = raw_text.replace("\\n", "\n")  # Convertir \\n a saltos reales
+                          
+                          try:
+                              start_time = convert_time_lrc(time_str) - 1  # Aplicar delay
+                              # 3. Dividir en líneas usando saltos reales
+                              text_lines = [line.strip() for line in text.split('\n') if line.strip()]
+                              current_entry = {
+                                  'start': start_time,
+                                  'text_lines': text_lines  # Lista de líneas procesadas
+                              }
+                          except Exception as e:
+                              print(f"Error en tiempo: {line} ({e})")
+                              current_entry = None
+                  else:
+                      # 4. Líneas subsiguientes sin timestamp
+                      if current_entry is not None and line.strip():
+                          # Agregar como línea adicional preservando espacios
+                          current_entry['text_lines'].append(line.strip())
+              
+              # 5. Agregar última entrada después del loop
+              if current_entry:
+                  entries.append(current_entry)
+              
+              # Procesar todas las entradas para tiempos finales
+              for i, entry in enumerate(entries):
+                  start_time = entry['start']
+                  
+                  # 6. Calcular end_time dinámicamente
                   if i < len(entries) - 1:
-                      next_start = entries[i + 1][0]
+                      next_start = entries[i + 1]['start']
                       time_diff = next_start - start_time
                       end_time = next_start if time_diff < 7 else start_time + 5
                   else:
                       end_time = start_time + 8
-
-                  end_time +=1
-                  write_ass_entry(f_out, start_time, end_time, [text], index, font_size, text_case, text_color)
+                  
+                  # 7. Escribir entrada .ASS con todas las líneas
+                  write_ass_entry(
+                      f_out, 
+                      start_time, 
+                      end_time + 1,  # Offset adicional
+                      entry['text_lines'],  # Lista de líneas originales
+                      index,
+                      font_size,
+                      text_case,
+                      text_color
+                  )
                   index += 1
 
     except Exception as e:

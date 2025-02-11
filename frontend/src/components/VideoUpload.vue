@@ -210,6 +210,7 @@
         };
         reader.readAsText(file);
       },
+
       handleFileSelect(event) {
       const file = event.target.files[0];
       if (file) this.readSubtitlesFile(file);

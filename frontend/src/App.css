@@ -410,7 +410,7 @@ video {
   height: 100%;
   padding: 20px;
   border-radius: 15px;
-  background-color: var(--primary-color);
+  background-color: var(--background-color);
   color: var(--text-color);
   font-size: 1em;
   line-height: 1.4;
