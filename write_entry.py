@@ -30,17 +30,50 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     # Determinar colores según el valor de text_color
     if text_color == 'dark':
         default_c = '&H000000'
-        chorus_c  = '&H734000'
-        quote_c   = '&H749574'
-        asterisk_c= '&H1D1D45'
-        percent_c = '&H347BD0'
+        chorus_c  = '&H5B5B5B'
+        quote_c   = '&H909090'
+        title_c = '&H303030'
+        highlight_c = '&H454545'
         shadow_3c = '&HFFFFFF'
-    else:
+    # Blue
+    elif text_color == 'blue':
+        default_c = '&H503E2C'
+        chorus_c  = '&HA67428'
+        quote_c   = '&HC79954'
+        title_c = '&H604315'
+        highlight_c = '&H76521A'
+        shadow_3c = '&HFFFFFF'
+
+    elif text_color == 'coffee':
+        default_c   = '&H2C3E50'   
+        chorus_c    = '&H2874A6'   
+        quote_c     = '&H5499C7'
+        title_c     = '&H154360'
+        highlight_c = '&H1A5276'
+        shadow_3c   = '&HFFFFFF'
+
+    elif text_color == 'green':
+        default_c   = '&H2C503E'
+        chorus_c    = '&H28A674'
+        quote_c     = '&H54C799'
+        title_c     = '&H156043'
+        highlight_c = '&H1A7652'
+        shadow_3c   = '&HFFFFFF'
+
+    elif text_color == 'red':
+        default_c   = '&H161E64'
+        chorus_c    = '&H3B417C'
+        quote_c     = '&H182C8A'
+        title_c     = '&H102240'
+        highlight_c = '&1E1E9A'
+        shadow_3c   = '&HFFFFFF'
+        
+    else: # light
         default_c = '&HFFFFFF'
         chorus_c  = '&H8BFFFF'
-        quote_c   = '&HB0C1EE'
-        asterisk_c= '&HEEEEFF'
-        percent_c = '&HFFE5C9'
+        quote_c   = '&HD8FDFF'
+        title_c = '&HF3F3F3'
+        highlight_c = '&DCD0BD'
         shadow_3c = '&H000000'
 
     # Definir el override de estilo por defecto (con blur, posición y demás)
@@ -59,28 +92,28 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     
     text = re.sub(  # Estilo para coros (entre paréntesis)
         r'(\([^)]+\))', 
-        lambda match: fr'{{\fnDancing Script Bold\\fs{font_size + 20}\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
+        lambda match: fr'{{\fnDancing Script Bold\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
                        + custom_capitalize(match.group(1), 'capitalize')
                        + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para citas (entre comillas)
         r'("([^"]+)")', 
-        lambda match: fr'{{\\3c{shadow_3c}&\\c{quote_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
+        lambda match: fr'{{\fnDancing Script Regular\\3c{shadow_3c}&\\c{quote_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
                       + custom_capitalize(match.group(1), text_case)
                       + r'{\\r}' + override_tags,
         text
     )
-    text = re.sub(  # Estilo para asteriscos
+    text = re.sub(  # Estilo para asteriscos Titles
         r'\*([^*]+)\*', 
-        lambda match: r'\N' + fr'{{\fs{font_size + 50}\\3c{shadow_3c}&\\c{asterisk_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N'
+        lambda match: r'\N' + fr'{{\fs{font_size + 70}\\3c{shadow_3c}&\\c{title_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N'
                       + match.group(1).upper()
                       + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para porcentajes
         r'\%([^%]+)\%', 
-        lambda match: fr'{{\\3c{shadow_3c}&\\c{percent_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
+        lambda match: fr'{{\\3c{shadow_3c}&\\c{ highlight_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
                       + custom_capitalize(f'%{match.group(1)}%', text_case)
                       + r'{\\r}' + override_tags,
         text

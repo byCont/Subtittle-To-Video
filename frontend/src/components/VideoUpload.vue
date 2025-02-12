@@ -79,21 +79,23 @@
           <select v-model="selectedTextColor" class="form-control">            
             <option class="option" value="light">Light</option>
             <option class="option" value="dark">Dark</option>
+            <option class="option" value="blue">Blue</option>
+            <option class="option" value="coffee">Coffee</option>
+            <option class="option" value="green">Green</option>            
+            <option class="option" value="red">Red</option>
           </select>
         </div>
 
         <div class="form-control-group-text">
           <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.fontIcon"></div>Text Size:</label>
           <select v-model="fontSize" class="form-control">
-            <option value="25">25</option>
-            <option value="30">30</option>
-            <option value="90">90</option>
+            <option value="30">60</option>
             <option value="95">95</option>
             <option value="110">110</option>
             <option value="120">120</option>
             <option value="130">130</option>
-            <option value="130">150</option>            
-            <option value="130">165</option>
+            <option value="150">150</option>            
+            <option value="165">165</option>
           </select>
         </div>
 
