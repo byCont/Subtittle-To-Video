@@ -92,14 +92,14 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     
     text = re.sub(  # Estilo para coros (entre paréntesis)
         r'(\([^)]+\))', 
-        lambda match: fr'{{\fnDancing Script Bold\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
+        lambda match: fr'{{\fnDancing Script Bold\\fs{font_size + 20}\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
                        + custom_capitalize(match.group(1), 'capitalize')
                        + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para citas (entre comillas)
         r'("([^"]+)")', 
-        lambda match: fr'{{\fnDancing Script Regular\\3c{shadow_3c}&\\c{quote_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
+        lambda match: fr'{{\fnDancing Script Regular\\fs{font_size + 20}\\3c{shadow_3c}&\\c{quote_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
                       + custom_capitalize(match.group(1), text_case)
                       + r'{\\r}' + override_tags,
         text
