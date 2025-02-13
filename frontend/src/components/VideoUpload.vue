@@ -157,7 +157,7 @@
     data() {
       return {
         selectedFont: 'Product Sans Bold',
-        fontSize: 95,
+        fontSize: 120,
         selectedTextCase: 'capitalize',
         selectedTextColor: 'light',
         selectedColor: '#d6d6d6cc',  // Valor por defecto (gris translúcido)
@@ -172,7 +172,7 @@
           { name: 'Poppins Regular', value: 'Poppins Regular' },
           { name: 'Poppins Bold', value: 'Poppins Bold'},
           { name: 'Impact', value: 'Impact' },
-          { name: 'Times New Roman', value: 'Times New Roman' },
+          { name: 'Times New Roman', value: 'Times New Roman Negrita' },
           { name: 'Verdana', value: 'Verdana' },
           { name: 'Comic Sans MS', value: 'Comic Sans MS' },
           { name: 'Dancing Script Regular', value: 'Dancing Script Regular' },
@@ -185,7 +185,7 @@
           { name: 'Alfa Slab One Regular', value: 'Alfa Slab One Regular' }, 
           { name: 'Special Elite Regular', value: 'Special Elite Regular'},
           { name: 'Bebas Neue', value: 'Bebas Neue Regular'},
-          { name: 'Sancreek', value: 'Sancreek Regular'},
+          { name: 'Stencil', value: 'stencil'},
           { name: 'Garrison BOLD', value: 'Garrison ExtraBold Sans BOLD'},
           { name: 'Akira', value: 'AkiraExpanded-SuperBold'}
 

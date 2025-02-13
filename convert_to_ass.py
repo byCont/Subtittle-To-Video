@@ -125,7 +125,7 @@ TextCase: {text_case}
                   write_ass_entry(
                       f_out, 
                       start_time, 
-                      end_time + 1,  # Offset adicional
+                      end_time + 2,  # Offset adicional
                       entry['text_lines'],  # Lista de líneas originales
                       index,
                       font_size,

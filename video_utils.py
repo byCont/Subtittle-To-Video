@@ -4,7 +4,7 @@ def generateVideoFromAudioAndSubtitles(
     audiofile: str,
     subtitlefile: str,
     font_name: str = "Product Sans Bold",
-    font_size: int = 90,
+    font_size: int = 110,
     text_case: str = 'capitalize',
     text_color: str = 'light',
     bg_color: str = "#00000000",

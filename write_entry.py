@@ -6,7 +6,7 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     
     # Definir el efecto y override general que incluya blur, posición y colores por defecto
     effect = r"\t(\fscx115\fscy115,\fscx110\fscy110,\fscx105\fscy105)"
-    
+   
     # Procesar y limpiar las líneas del texto
     clean_lines = [line for line in text_lines if line]
     # Unir las líneas usando el separador ASS de salto de línea
@@ -100,13 +100,13 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     text = re.sub(  # Estilo para citas (entre comillas)
         r'("([^"]+)")', 
         lambda match: fr'{{\fnDancing Script Regular\\fs{font_size + 20}\\3c{shadow_3c}&\\c{quote_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
-                      + custom_capitalize(match.group(1), text_case)
+                      + custom_capitalize(match.group(1), 'capitalize')
                       + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para asteriscos Titles
         r'\*([^*]+)\*', 
-        lambda match: r'\N' + fr'{{\fs{font_size + 70}\\3c{shadow_3c}&\\c{title_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N'
+        lambda match: r'\N' + fr'{{\fs{font_size + 80}\\3c{shadow_3c}&\\c{title_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N'
                       + match.group(1).upper()
                       + r'{\\r}' + override_tags,
         text
