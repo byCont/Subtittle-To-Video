@@ -117,7 +117,7 @@ TextCase: {text_case}
                   if i < len(entries) - 1:
                       next_start = entries[i + 1]['start']
                       time_diff = next_start - start_time
-                      end_time = next_start if time_diff < 7 else start_time + 5
+                      end_time = next_start if time_diff < 8 else start_time + 7
                   else:
                       end_time = start_time + 8
                   
