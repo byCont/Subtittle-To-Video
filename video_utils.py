@@ -100,7 +100,7 @@ def generateVideoFromAudioAndSubtitles(
         "-map", "1:a:0",
         "-c:v", "libx265",
         "-preset", "medium",
-        "-crf", "28",
+        "-crf", "30",
         "-c:a", "aac",
         "-b:a", "299k",
         "-shortest",

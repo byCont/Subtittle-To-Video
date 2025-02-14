@@ -175,7 +175,7 @@
           { name: 'Times New Roman', value: 'Times New Roman Negrita' },
           { name: 'Verdana', value: 'Verdana' },
           { name: 'Comic Sans MS', value: 'Comic Sans MS' },
-          { name: 'Dancing Script Regular', value: 'Dancing Script Regular' },
+          { name: 'Dancing Script Regular', value: 'Dancing Script Bold' },
           { name: 'Barrio Upper', value: 'Barrio Regular' },
           { name: 'Barriecito', value: 'Barriecito Regular'},          
           { name: 'Gread Vibes', value: 'Great Vibes Regular'},
