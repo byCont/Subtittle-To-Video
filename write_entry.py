@@ -111,6 +111,13 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
                       + r'{\\r}' + override_tags,
         text
     )
+    text = re.sub(  # Estilo Big upper expresion
+        r'\+([^+]+)\+', 
+        lambda match: r'\N' + fr'{{\fs{font_size + 40}\\3c{shadow_3c}&\\c{highlight_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N'
+                      + match.group(1).upper()
+                      + r'{\\r}' + override_tags,
+        text
+    )
     text = re.sub(  # Estilo para porcentajes
         r'\%([^%]+)\%', 
         lambda match: fr'{{\\3c{shadow_3c}&\\c{ highlight_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
@@ -160,7 +167,7 @@ def custom_capitalize(text, text_case):
         else:
             nuevo_contenido = protected_content[0].upper() + protected_content[1:].lower()
     else:
-        nuevo_contenido = protected_content  # Sin cambios
+        nuevo_contenido = protected_content
 
     # Restaurar el marcador; como lower() puede haberlo convertido a minúsculas,
     # reemplazamos ambas versiones
