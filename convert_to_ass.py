@@ -124,8 +124,8 @@ TextCase: {text_case}
                   # 7. Escribir entrada .ASS con todas las líneas
                   write_ass_entry(
                       f_out, 
-                      start_time, 
-                      end_time + 1,  # Offset adicional
+                      start_time + 1, 
+                      end_time + 2,  # Offset adicional
                       entry['text_lines'],  # Lista de líneas originales
                       index,
                       font_size,

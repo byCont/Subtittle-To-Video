@@ -168,7 +168,7 @@
         showSubtitleEditor: false,
         fontOptions: [
           { name: 'Product Sans Bold', value: 'Product Sans Bold' }, // default font
-          { name: 'Arial', value: 'Arial' },
+          { name: 'Arial', value: 'Arial Negrita' },
           { name: 'Poppins Regular', value: 'Poppins Regular' },
           { name: 'Poppins Bold', value: 'Poppins Bold'},
           { name: 'Impact', value: 'Impact' },
