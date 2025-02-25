@@ -8,3 +8,4 @@ logo/*
 *.ass
 frontend/node_modules
 templates/dist
+subt_process/__pycache__/*
