@@ -15,7 +15,7 @@ def generateVideoFromAudioAndSubtitles(
     import subprocess
     from moviepy.editor import AudioFileClip
     from config import config
-    from convert_to_ass import convert_to_ass_with_effects
+    from subt_process.convert_to_ass import convert_to_ass_with_effects
 
     # 1. Seleccionar video de fondo
     background_videos_folder = os.path.join(os.path.dirname(__file__), 'background_videos')
@@ -98,9 +98,9 @@ def generateVideoFromAudioAndSubtitles(
         "-filter_complex", complex_filter_str,
         "-map", "[final]",
         "-map", "1:a:0",
-        "-c:v", "libx265",
-        "-preset", "medium",
-        "-crf", "28",
+        "-c:v", "libx264",
+        "-preset", "ultrafast",
+        "-crf", "34",
         "-c:a", "aac",
         "-b:a", "299k",
         "-shortest",

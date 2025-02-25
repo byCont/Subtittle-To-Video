@@ -1,4 +1,4 @@
-[file name]: SubtitlePreviewPlayer.vue
+[[file name]: SubtitlePreviewPlayer.vue
 [file content begin]
 <template>
   <div class="preview-player">
@@ -17,7 +17,17 @@
         @input="seekAudio"
         class="seek-bar"
       />
-      <span class="time-display">{{ formatTime(duration) }}</span>
+      <span class="time-display me-2">{{ formatTime(duration) }}</span>
+      <!-- Nuevo control de volumen -->
+      <input 
+          type="range" 
+          v-model="volume"
+          v-html="icons.volumeIcon"
+          min="0"
+          max="1"
+          step="0.01"
+          class="volume-slider"
+        />
     </div>
 
     <!-- Hidden audio element -->
@@ -47,6 +57,7 @@
         currentTime: 0,
         duration: 0,
         seekTime: 0,
+        volume: 0.7, // Nueva propiedad para el volumen, inicializada en máximo
         audioUrl: '',
         icons,
       };
@@ -62,6 +73,12 @@
               this.$refs.audioPlayer.load();
             });
           }
+        }
+      },
+      // Watcher para actualizar el volumen del audio cuando cambie 'volume'
+      volume(newVal) {
+        if (this.$refs.audioPlayer) {
+          this.$refs.audioPlayer.volume = newVal;
         }
       }
     },
@@ -88,6 +105,8 @@
 
       updateDuration() {
         this.duration = this.$refs.audioPlayer.duration;
+        // Establecer el volumen al valor actual de 'volume' al cargar el audio
+        this.$refs.audioPlayer.volume = this.volume;
       },
 
       seekAudio() {
@@ -122,5 +141,14 @@
 </script>
 
 <style scoped>
+
+  .volume-slider {
+    width: 70px;
+    height: 40px; /* Altura del área interactiva */
+    transform: rotate(-90deg)  translateY(1120%);
+    position: absolute;    
+    transition: opacity 0.2s;
+    cursor: pointer;
+  }
 </style>
-[file content end]
+[file content end]]

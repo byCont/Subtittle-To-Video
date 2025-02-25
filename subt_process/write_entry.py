@@ -7,32 +7,37 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     # Definir el efecto y override general que incluya blur, posición y colores por defecto
     effect = r"\t(\fscx115\fscy115,\fscx110\fscy110,\fscx105\fscy105)"
    
-    # Procesar y limpiar las líneas del texto
+    # Procesar y limpiar las líneas del texto, máximo 2 líneas
     clean_lines = [line for line in text_lines if line]
+    clean_lines = clean_lines[:2]
+
+    # Aplicar tamaños de fuente según la cantidad de líneas:
+    # - Si es una sola línea, usar tamaño 130.
+    # - Si son dos líneas, la línea más larga usa 80 y la otra 120.
+    if len(clean_lines) == 1:
+        clean_lines[0] = f"{{\\fs130}}" + clean_lines[0]
+    elif len(clean_lines) == 2:
+        if len(clean_lines[0]) >= len(clean_lines[1]):
+            clean_lines[0] = f"{{\\fs80}}" + clean_lines[0]
+            clean_lines[1] = f"{{\\fs120}}" + clean_lines[1]
+        else:
+            clean_lines[0] = f"{{\\fs120}}" + clean_lines[0]
+            clean_lines[1] = f"{{\\fs80}}" + clean_lines[1]
+
     # Unir las líneas usando el separador ASS de salto de línea
     text = r"\N".join(clean_lines)
-    # Asegurarse de que no queden dobles secuencias de salto
-    text = r"\N".join(clean_lines) if len(clean_lines) > 1 else clean_lines[0] if clean_lines else ""
+    # Prevenir dobles saltos
+    text = text.replace(r"\N\N", r"\N")
 
-    # Mantener espacios en líneas vacías intencionales
-    text = text.replace(r"\N\N", r"\N")  # Prevenir dobles saltos
-    # Aplicar capitalización según corresponda
-    
-    if text_case == 'upper':
-        text = text.upper()
-    elif text_case == 'capitalize':
-        # Capitalizar cada línea por separado, preservando el literal "\N"
-        text = r"\N".join([
-            line[:1].upper() + line[1:].lower() if line else ''
-            for line in text.split(r"\N")
-        ])
+    # Aplicar capitalización según corresponda, preservando los tags de formato
+    text = apply_text_case_preserve_tags(text, text_case)
     
     # Determinar colores según el valor de text_color
     if text_color == 'dark':
         default_c = '&H000000'
         chorus_c  = '&H5B5B5B'
         quote_c   = '&H909090'
-        title_c = '&H303030'
+        title_c   = '&H303030'
         highlight_c = '&H454545'
         shadow_3c = '&HFFFFFF'
     # Blue
@@ -40,10 +45,9 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
         default_c = '&H503E2C'
         chorus_c  = '&HA67428'
         quote_c   = '&HC79954'
-        title_c = '&H604315'
+        title_c   = '&H604315'
         highlight_c = '&H76521A'
         shadow_3c = '&HFFFFFF'
-
     elif text_color == 'coffee':
         default_c   = '&H2C3E50'   
         chorus_c    = '&H2874A6'   
@@ -51,7 +55,6 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
         title_c     = '&H154360'
         highlight_c = '&H1A5276'
         shadow_3c   = '&HFFFFFF'
-
     elif text_color == 'green':
         default_c   = '&H2C503E'
         chorus_c    = '&H28A674'
@@ -59,7 +62,6 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
         title_c     = '&H156043'
         highlight_c = '&H1A7652'
         shadow_3c   = '&HFFFFFF'
-
     elif text_color == 'red':
         default_c   = '&H161E64'
         chorus_c    = '&H3B417C'
@@ -67,14 +69,13 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
         title_c     = '&H102240'
         highlight_c = '&1E1E9A'
         shadow_3c   = '&HFFFFFF'
-        
-    else: # light
-        default_c = '&HFFFFFF'
-        chorus_c  = '&H8BFFFF'
-        quote_c   = '&HD8FDFF'
-        title_c = '&HF3F3F3'
-        highlight_c = '&DCD0BD'
-        shadow_3c = '&H000000'
+    else:  # light
+        default_c   = '&HFFFFFF'
+        chorus_c    = '&H8BFFFF'
+        quote_c     = '&HD8FDFF'
+        title_c     = '&HF3F3F3'
+        highlight_c = '&HDCD0BD'
+        shadow_3c   = '&H000000'
 
     # Definir el override de estilo por defecto (con blur, posición y demás)
     style_override = r"\blur15"
@@ -87,9 +88,8 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     override_tags = fr'{{{effect}{style_override}\\c{default_c}\\3c{shadow_3c}\\4c{shadow_3c}\\shad3\\bord2}}'
     
     # --- Aplicar estilos especiales en línea y luego reinsertar el override por defecto ---
-    # Nota: se añade al final de cada segmento estilizado: {\\r} + override_tags,
+    # Se añade al final de cada segmento estilizado: {\\r} + override_tags,
     # para que el resto del texto siga usando el override que incluye blur.
-    
     text = re.sub(  # Estilo para coros (entre paréntesis)
         r'(\([^)]+\))', 
         lambda match: fr'{{\fnDancing Script Bold\\fs{font_size + 20}\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
@@ -99,30 +99,30 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     )
     text = re.sub(  # Estilo para citas (entre comillas)
         r'("([^"]+)")', 
-        lambda match: fr'{{\fnDancing Script Bold\\fs{font_size + 20}\\3c{shadow_3c}&\\c{quote_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
-                      + custom_capitalize(match.group(1), 'capitalize')
-                      + r'{\\r}' + override_tags,
+        lambda match: fr'{{\fnDancing Script Bold\\fs{font_size + 20}\\3c{shadow_3c}&\\c{quote_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
+                       + custom_capitalize(match.group(1), 'capitalize')
+                       + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para asteriscos Titles
         r'\*([^*]+)\*', 
         lambda match: r'\N' + fr'{{\fs{font_size + 80}\\3c{shadow_3c}&\\c{title_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
-                      + match.group(1).upper()
-                      + r'{\\r}' + override_tags,
+                       + match.group(1).upper()
+                       + r'{\\r}' + override_tags,
         text
     )
-    text = re.sub(  # Estilo Big upper expresion
+    text = re.sub(  # Estilo Big upper expresión
         r'\+([^+]+)\+', 
         lambda match: fr'{{\fs{font_size + 30}\\3c{shadow_3c}&\\c{highlight_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
-                      + match.group(1).upper()
-                      + r'{\\r}' + override_tags,
+                       + match.group(1).upper()
+                       + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para porcentajes
         r'\%([^%]+)\%', 
-        lambda match: fr'{{\\3c{shadow_3c}&\\c{ highlight_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
-                      + custom_capitalize(f'%{match.group(1)}%', text_case)
-                      + r'{\\r}' + override_tags,
+        lambda match: fr'{{\\3c{shadow_3c}&\\c{highlight_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
+                       + custom_capitalize(f'%{match.group(1)}%', text_case)
+                       + r'{\\r}' + override_tags,
         text
     )
 
@@ -138,6 +138,33 @@ def format_time_ass(seconds):
     m = int((seconds % 3600) // 60)
     s = seconds % 60
     return f"{h}:{m:02d}:{s:05.2f}"
+
+def apply_text_case_preserve_tags(text, text_case):
+    """
+    Aplica la transformación (mayúsculas o capitalización) solo a las partes de
+    texto que no forman parte de tags de formato (entre llaves {}).
+    """
+    def transform(segment):
+        # Si el segmento no es un tag, se aplica la transformación
+        if text_case == 'upper':
+            return segment.upper()
+        elif text_case == 'capitalize':
+            return r"\N".join([
+                s[:1].upper() + s[1:].lower() if s else ''
+                for s in segment.split(r"\N")
+            ])
+        else:
+            return segment
+
+    # Separa el texto en partes: tags (entre {}) y contenido
+    parts = re.split(r'(\{[^}]+\})', text)
+    new_parts = []
+    for part in parts:
+        if part.startswith('{') and part.endswith('}'):
+            new_parts.append(part)  # Es un tag; se deja intacto
+        else:
+            new_parts.append(transform(part))
+    return ''.join(new_parts)
 
 # Función auxiliar para capitalizar ignorando signos como ¿ y ¡
 def custom_capitalize(text, text_case):
@@ -169,8 +196,7 @@ def custom_capitalize(text, text_case):
     else:
         nuevo_contenido = protected_content
 
-    # Restaurar el marcador; como lower() puede haberlo convertido a minúsculas,
-    # reemplazamos ambas versiones
+    # Restaurar el marcador (se reemplaza tanto en mayúsculas como en minúsculas)
     nuevo_contenido = nuevo_contenido.replace(marker, r'\N').replace(marker.lower(), r'\N')
 
     if delimiter == '%%':

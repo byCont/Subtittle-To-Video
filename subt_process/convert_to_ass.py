@@ -1,5 +1,5 @@
 # convert_to_ass.py, Functions for convert sub to .ass
-from write_entry import write_ass_entry
+from subt_process.write_entry import write_ass_entry
 
 def convert_to_ass_with_effects(subtitlefile, output_ass, font_name, font_size, text_case, text_color):
     try:
