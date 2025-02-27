@@ -177,6 +177,7 @@
           { name: 'Permanent Marker',value: 'Permanent Marker Regular'},
           { name: 'Satisfy', value: 'Satisfy Regular'},
           { name: 'Alfa Slab One', value: 'Alfa Slab One Regular' },
+          { name: 'Stardos Stencil', value: 'Stardos Stencil Bold'}
         ]
       };
     },

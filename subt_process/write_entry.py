@@ -90,21 +90,21 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
     
     text = re.sub(  # Estilo para coros (entre paréntesis)
         r'(\([^)]+\))', 
-        lambda match: fr'{{\fnDancing Script Bold\\fs{font_size + 20}\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
+        lambda match: fr'{{\fnDancing Script Bold\\fs140\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}'
                        + custom_capitalize(match.group(1), 'capitalize')
                        + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para citas (entre comillas)
         r'("([^"]+)")', 
-        lambda match: fr'{{\fnDancing Script Bold\\fs{font_size + 20}\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
+        lambda match: fr'{{\fnDancing Script Bold\\fs140\\3c{shadow_3c}&\\c{chorus_c}&\\4c{shadow_3c}&\\shad3\\bord2}}' 
                       + custom_capitalize(match.group(1), 'capitalize')
                       + r'{\\r}' + override_tags,
         text
     )
     text = re.sub(  # Estilo para asteriscos Titles
         r'\*([^*]+)\*', 
-        lambda match: r'\N' + fr'{{\fs{font_size + 80}\\3c{shadow_3c}&\\c{title_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N'
+        lambda match: r'\N' + fr'{{\fs180\\3c{shadow_3c}&\\c{title_c}&\\4c{shadow_3c}&\\shad3\\bord2}}\N'
                       + match.group(1).upper()
                       + r'{\\r}' + override_tags,
         text
