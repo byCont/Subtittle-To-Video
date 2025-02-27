@@ -171,13 +171,15 @@
           { name: 'Poppins Bold', value: 'Poppins Bold'},
           { name: 'Impact', value: 'Impact' },
           { name: 'Merriweather', value: 'Merriweather Bold'},
+          { name: 'Monomakh', value: 'Monomakh Regular'},
           { name: 'Dancing Script Regular', value: 'Dancing Script Bold' },
           { name: 'Barriecito', value: 'Barriecito Regular'},
           { name: 'Lobster', value: 'Lobster Regular'},
           { name: 'Permanent Marker',value: 'Permanent Marker Regular'},
           { name: 'Satisfy', value: 'Satisfy Regular'},
           { name: 'Alfa Slab One', value: 'Alfa Slab One Regular' },
-          { name: 'Stardos Stencil', value: 'Stardos Stencil Bold'}
+          { name: 'Stardos Stencil', value: 'Stardos Stencil Bold'},
+          { name: 'Lexend', value: 'Lexend Bold'}
         ]
       };
     },

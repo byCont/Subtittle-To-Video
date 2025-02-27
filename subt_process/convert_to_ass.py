@@ -1,4 +1,3 @@
-# convert_to_ass.py, Functions for convert sub to .ass
 from subt_process.write_entry import write_ass_entry
 
 def convert_to_ass_with_effects(subtitlefile, output_ass, font_name, font_size, text_case, text_color):
@@ -6,27 +5,7 @@ def convert_to_ass_with_effects(subtitlefile, output_ass, font_name, font_size, 
         with open(subtitlefile, 'r', encoding='utf-8') as f_in, \
              open(output_ass, 'w', encoding='utf-8') as f_out:
 
-            # Determinar estilos según text_color
-            if text_color == 'light':
-                default_primary = "&H00FFFFFF"
-                default_secondary_color = "&H000000FF"
-                default_outline = "&H00000000"
-                default_back = "&H00000000"
-                secondary_primary = "&H00000000"
-                secondary_secondary = "&HFFFFFFFF"
-                secondary_outline = "&H00FFFFFF"
-                secondary_back = "&HFFFFFFFF"
-            else:  # dark
-                default_primary = "&H00000000"
-                default_secondary_color = "&H00FFFFFF"
-                default_outline = "&H00FFFFFF"
-                default_back = "&H00FFFFFF"
-                secondary_primary = "&H00FFFFFF"
-                secondary_secondary = "&HFF000000"
-                secondary_outline = "&H00000000"
-                secondary_back = "&H00000000"
-
-            # Cabecera ASS con parámetros dinámicos
+            # Escribir la cabecera ASS solo con "Default"
             f_out.write(f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: 1920
@@ -34,119 +13,148 @@ PlayResY: 1080
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, AlphaLevel, Encoding
-Style: Default,{font_name},{font_size},{default_primary},{default_secondary_color},{default_outline},{default_back},0,0,1,1,4,2,0,0,50,0,1
-Style: Secondary,{font_name},{font_size},{secondary_primary},{secondary_secondary},{secondary_outline},{secondary_back},0,0,1,5,4,2,0,0,50,0,1
+Style: Default,{font_name},{font_size},&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,1,1,0,2,0,0,50,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Text
 TextCase: {text_case}
 """)
 
-            if subtitlefile.endswith('.srt'):
-              # Leer todo el contenido y separar por bloques (cada bloque corresponde a un subtítulo)
-              content = f_in.read().strip()
-              blocks = content.split('\n\n')
-              index = 0
-              for block in blocks:
-                  # Separar las líneas de cada bloque sin eliminar los saltos de línea internos
-                  lines = block.splitlines()
-                  if len(lines) < 3:
-                      continue  # Se espera al menos: índice, timestamp y una línea de texto
-                  # La primera línea es el número del subtítulo (se ignora)
-                  # La segunda línea contiene el timestamp
-                  timestamp_line = lines[1]
-                  try:
-                      start_str, end_str = timestamp_line.split('-->')
-                  except ValueError:
-                      raise ValueError(f"Error en el formato de tiempo en el bloque:\n{block}")
-                  start_time = convert_time_srt(start_str.strip())
-                  end_time = convert_time_srt(end_str.strip())
-                  # El resto de las líneas son el texto del subtítulo (se conserva cada línea)
-                  text_lines = lines[2:]
-                  # Opcional: añadir un margen (por ejemplo, 1 segundo) al tiempo de finalización
-                  end_time += 1
-                  write_ass_entry(f_out, start_time, end_time, text_lines, index, font_size, text_case, text_color)
-                  index += 1
+            # Lista para almacenar todos los subtítulos procesados
+            all_subtitles = []
+            title_artist = None
 
+            # Procesamiento de .srt
+            if subtitlefile.endswith('.srt'):
+                content = f_in.read().strip()
+                blocks = content.split('\n\n')
+                for i, block in enumerate(blocks):
+                    lines = block.splitlines()
+                    if len(lines) < 3:
+                        continue
+                    timestamp_line = lines[1]
+                    try:
+                        start_str, end_str = timestamp_line.split('-->')
+                    except ValueError:
+                        raise ValueError(f"Error en el formato de tiempo en el bloque:\n{block}")
+                    start_time = convert_time_srt(start_str.strip())
+                    end_time = convert_time_srt(end_str.strip()) + 2
+                    text_lines = lines[2:]
+                    all_subtitles.append({
+                        'start': start_time,
+                        'end': end_time,
+                        'text_lines': text_lines
+                    })
+                    if i == 0:
+                        title_artist = {'text_lines': text_lines}
+
+            # Procesamiento de .lrc
             elif subtitlefile.endswith('.lrc'):
-              entries = []
-              index = 0
-              current_entry = None
-              
-              for line in f_in:
-                  line = line.rstrip("\n")  # Quitar salto de línea final
-                  
-                  if line.startswith('['):
-                      # 1. Guardar entrada anterior si existe
-                      if current_entry:
-                          entries.append(current_entry)
-                      
-                      end_bracket = line.find(']')
-                      if end_bracket != -1:
-                          time_str = line[1:end_bracket]
-                          # 2. Extraer texto y procesar escapes
-                          raw_text = line[end_bracket+1:].lstrip()
-                          text = raw_text.replace("\\n", "\n")  # Convertir \\n a saltos reales
-                          
-                          try:
-                              start_time = convert_time_lrc(time_str) - 1  # Aplicar delay
-                              # 3. Dividir en líneas usando saltos reales
-                              text_lines = [line.strip() for line in text.split('\n') if line.strip()]
-                              current_entry = {
-                                  'start': start_time,
-                                  'text_lines': text_lines  # Lista de líneas procesadas
-                              }
-                          except Exception as e:
-                              print(f"Error en tiempo: {line} ({e})")
-                              current_entry = None
-                  else:
-                      # 4. Líneas subsiguientes sin timestamp
-                      if current_entry is not None and line.strip():
-                          # Agregar como línea adicional preservando espacios
-                          current_entry['text_lines'].append(line.strip())
-              
-              # 5. Agregar última entrada después del loop
-              if current_entry:
-                  entries.append(current_entry)
-              
-              # Procesar todas las entradas para tiempos finales
-              for i, entry in enumerate(entries):
-                  start_time = entry['start']
-                  
-                  # 6. Calcular end_time dinámicamente
-                  if i < len(entries) - 1:
-                      next_start = entries[i + 1]['start']
-                      time_diff = next_start - start_time
-                      end_time = next_start if time_diff < 8 else start_time + 7
-                  else:
-                      end_time = start_time + 8
-                  
-                  # 7. Escribir entrada .ASS con todas las líneas
-                  write_ass_entry(
-                      f_out, 
-                      start_time + 1, 
-                      end_time + 2,  # Offset adicional
-                      entry['text_lines'],  # Lista de líneas originales
-                      index,
-                      font_size,
-                      text_case,
-                      text_color
-                  )
-                  index += 1
+                entries = []
+                current_entry = None
+                for line in f_in:
+                    line = line.rstrip("\n")
+                    if line.startswith('['):
+                        if current_entry:
+                            entries.append(current_entry)
+                        end_bracket = line.find(']')
+                        if end_bracket != -1:
+                            time_str = line[1:end_bracket]
+                            raw_text = line[end_bracket+1:].lstrip()
+                            text = raw_text.replace("\\n", "\n")
+                            try:
+                                start_time = convert_time_lrc(time_str) - 1
+                                text_lines = [line.strip() for line in text.split('\n') if line.strip()]
+                                current_entry = {
+                                    'start': start_time,
+                                    'text_lines': text_lines
+                                }
+                            except Exception as e:
+                                print(f"Error en tiempo: {line} ({e})")
+                                current_entry = None
+                    else:
+                        if current_entry is not None and line.strip():
+                            current_entry['text_lines'].append(line.strip())
+                if current_entry:
+                    entries.append(current_entry)
+                for i, entry in enumerate(entries):
+                    start_time = entry['start']
+                    if i < len(entries) - 1:
+                        next_start = entries[i + 1]['start']
+                        time_diff = next_start - start_time
+                        end_time = next_start if time_diff < 8 else start_time + 7
+                    else:
+                        end_time = start_time + 8
+                    all_subtitles.append({
+                        'start': start_time + 1,
+                        'end': end_time + 2,
+                        'text_lines': entry['text_lines']
+                    })
+                    if i == 0:
+                        title_artist = {'text_lines': entry['text_lines']}
+
+            all_subtitles.sort(key=lambda x: x['start'])
+
+            # Identificar gaps (espacios en blanco)
+            gaps = []
+            video_start = 0
+            for i in range(len(all_subtitles)):
+                current_sub = all_subtitles[i]
+                if i == 0 and current_sub['start'] > 0:
+                    gaps.append({
+                        'start': video_start,
+                        'end': max(0, current_sub['start'] - 2)
+                    })
+                if i < len(all_subtitles) - 1:
+                    next_sub = all_subtitles[i + 1]
+                    if next_sub['start'] - current_sub['end'] > 2:
+                        gaps.append({
+                            'start': current_sub['end'],
+                            'end': max(current_sub['end'], next_sub['start'] - 2)
+                        })
+
+            # Escribir subtítulos normales con "Default" y title_mode=False
+            for i, subtitle in enumerate(all_subtitles):
+                write_ass_entry(
+                    f_out,
+                    subtitle['start'],
+                    subtitle['end'],
+                    subtitle['text_lines'],
+                    i,
+                    font_size,
+                    text_case,
+                    text_color,
+                    style="Default",
+                    title_mode=False  # Por defecto, se omite ya que es False
+                )
+
+            # Escribir título/artista en huecos con "Default" y title_mode=True (centrado)
+            if title_artist and gaps:
+                for i, gap in enumerate(gaps):
+                    if gap['end'] - gap['start'] >= 1:
+                        write_ass_entry(
+                            f_out,
+                            gap['start'],
+                            gap['end'],
+                            title_artist['text_lines'],
+                            10000 + i,
+                            font_size,
+                            text_case,
+                            text_color,
+                            style="Default",
+                            title_mode=True  # Centrado para título/artista
+                        )
 
     except Exception as e:
         print(f"Error converting subtitles: {e}")
         raise
 
-
 def convert_time_srt(time_str):
-    """Convierte tiempo SRT (00:00:00,000) a segundos."""
     h, m, s = time_str.split(':')
     s, ms = s.replace(',', '.').split('.')
     return int(h)*3600 + int(m)*60 + int(s) + int(ms)/1000
 
 def convert_time_lrc(time_str):
-    """Convierte tiempo LRC ([mm:ss.xx]) a segundos."""
     m, s = time_str.split(':')
     s = s.replace('.', '')
     return int(m)*60 + int(s)/100
