@@ -1,78 +1,51 @@
 import re
 
 def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, text_color, style="Default", title_mode=False):
+    """ Genera una línea de subtítulo en formato ASS con efectos de motion graphics """
     if style == "Default":
-        effect = r"\t(\fscx115\fscy115,\fscx110\fscy110,\fscx105\fscy105)"
-        style_override = r"\blur15"
+        # Efectos de animación
+        effect = r"\t(\fscx120\fscy120,\fscx100\fscy100)"  # Zoom dinámico
+        style_override = r"\blur5\fade(200,0)"  # Fade-in con desenfoque
         
-        # Determinar posición según si es título o subtítulo normal
+        # Movimiento y tracking dinámico
+        move_effect = r"\move(960,1200,960,600,0,1500)"  # Entrada desde abajo
+        tracking_effect = r"\t(\fsp10,\fsp0)"  # Ajuste de tracking de letras
+
+        # Posición de los subtítulos (arriba o abajo)
         if title_mode:
-            style_override += r"\an8\pos(960,100)"  # Posición para título/artista
+            style_override += r"\an8\pos(960,100)"  # Posición superior para títulos
         else:
             if index % 2 == 0:
                 style_override += r"\an8\pos(960,100)\a6"  # Arriba
             else:
                 style_override += r"\an8\pos(960,400)\a6"  # Abajo
 
-        # Definir colores según text_color
-        if text_color == 'dark':
-            default_c = '&H000000'
-            chorus_c = '&H5B5B5B'
-            quote_c = '&H909090'
-            title_c = '&H303030'
-            highlight_c = '&H454545'
-            shadow_3c = '&HFFFFFF'
-        elif text_color == 'blue':
-            default_c = '&H503E2C'
-            chorus_c = '&HA67428'
-            quote_c = '&HC79954'
-            title_c = '&H604315'
-            highlight_c = '&H76521A'
-            shadow_3c = '&HFFFFFF'
-        elif text_color == 'coffee':
-            default_c = '&H2C3E50'
-            chorus_c = '&H2874A6'
-            quote_c = '&H5499C7'
-            title_c = '&H154360'
-            highlight_c = '&H1A5276'
-            shadow_3c = '&HFFFFFF'
-        elif text_color == 'green':
-            default_c = '&H2C503E'
-            chorus_c = '&H28A674'
-            quote_c = '&H54C799'
-            title_c = '&H156043'
-            highlight_c = '&H1A7652'
-            shadow_3c = '&HFFFFFF'
-        elif text_color == 'red':
-            default_c = '&H161E64'
-            chorus_c = '&H3B417C'
-            quote_c = '&H182C8A'
-            title_c = '&H102240'
-            highlight_c = '&H1E1E9A'
-            shadow_3c = '&HFFFFFF'
-        else:  # light
-            default_c = '&HFFFFFF'
-            chorus_c = '&H8BFFFF'
-            quote_c = '&HD8FDFF'
-            title_c = '&HF3F3F3'
-            highlight_c = '&HDCD0BD'
-            shadow_3c = '&H000000'
+        # Configuración de colores
+        color_map = {
+            'dark': ('&H000000', '&H5B5B5B', '&H909090', '&H303030', '&H454545', '&HFFFFFF'),
+            'blue': ('&H503E2C', '&HA67428', '&HC79954', '&H604315', '&H76521A', '&HFFFFFF'),
+            'coffee': ('&H2C3E50', '&H2874A6', '&H5499C7', '&H154360', '&H1A5276', '&HFFFFFF'),
+            'green': ('&H2C503E', '&H28A674', '&H54C799', '&H156043', '&H1A7652', '&HFFFFFF'),
+            'red': ('&H161E64', '&H3B417C', '&H182C8A', '&H102240', '&H1E1E9A', '&HFFFFFF'),
+            'light': ('&HFFFFFF', '&H8BFFFF', '&HD8FDFF', '&HF3F3F3', '&HDCD0BD', '&H000000')
+        }
+        default_c, chorus_c, quote_c, title_c, highlight_c, shadow_3c = color_map.get(text_color, color_map['light'])
 
         # Aplicar etiquetas de override
-        override_tags = fr'{{{effect}{style_override}\c{default_c}\3c{shadow_3c}\4c{shadow_3c}\shad3\bord2}}'
-        
-        # Procesar y limpiar las líneas del texto
+        override_tags = fr'{{{move_effect}{effect}{tracking_effect}{style_override}\c{default_c}\3c{shadow_3c}\4c{shadow_3c}\shad3\bord2}}'
+
+        # Procesar y limpiar el texto
         clean_lines = [line for line in text_lines if line]
         text = r"\N".join(clean_lines) if len(clean_lines) > 1 else clean_lines[0] if clean_lines else ""
-        text = text.replace(r"\N\N", r"\N")  # Prevenir dobles saltos
-        
+        text = text.replace(r"\N\N", r"\N")
+
         # Aplicar capitalización
         if text_case == 'upper':
             text = text.upper()
         elif text_case == 'capitalize':
             text = r"\N".join([line[:1].upper() + line[1:].lower() if line else '' for line in text.split(r"\N")])
 
-        # Aplicar sustituciones regex para estilos especiales
+        # Aplicar estilos especiales
         text = re.sub(
             r'(\([^)]+\))',
             lambda match: fr'{{\fnDancing Script Bold\fs140\3c{shadow_3c}&\c{chorus_c}&\4c{shadow_3c}&\shad3\bord2}}'
@@ -173,3 +146,4 @@ def custom_capitalize(text, text_case):
         return f"({nuevo_contenido})"
     elif delimiter == '""':
         return f'"{nuevo_contenido}"'
+    
