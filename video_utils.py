@@ -1,4 +1,4 @@
-# video_utils.py, Video editor backend
+# video_utils.py, Video editor backend 
 
 def generateVideoFromAudioAndSubtitles(
     audiofile: str,
@@ -39,11 +39,11 @@ def generateVideoFromAudioAndSubtitles(
     # 5. Construir comando base
     command = [
         "ffmpeg",
-        "-stream_loop", "-1",
+        "-stream_loop", "-1",          # Loop para el video de fondo
         "-t", str(audio_duration),
-        "-i", background_video_path,  # Input 0: Video de fondo
-        "-i", audiofile,              # Input 1: Audio
-        "-i", logo_image_path,        # Input 2: Logo
+        "-i", background_video_path,   # Input 0: Video de fondo
+        "-i", audiofile,               # Input 1: Audio
+        "-i", logo_image_path,         # Input 2: Logo
     ]
     
     # Si existe una imagen adicional, se añade como Input 3
@@ -51,6 +51,13 @@ def generateVideoFromAudioAndSubtitles(
     if has_image:
         command.extend(["-i", image_path])  # Input 3: Imagen adicional
 
+    # Agregar video glitch (con opacidad 70% y loop) como capa adicional
+    glitch_video_path = os.path.join(background_videos_folder, "glitch.mp4")
+    command.extend(["-stream_loop", "-1"])     # Loop para el video glitch
+    command.extend(["-i", glitch_video_path])
+    # Definir el índice del input para el video glitch: si existe imagen, será 4; sino, 3.
+    glitch_idx = 3 if not has_image else 4
+    
     # 6. Construir filtro complejo dinámicamente
     complex_filter = []
     
@@ -80,15 +87,17 @@ def generateVideoFromAudioAndSubtitles(
         base_for_logo = "[withfps]"
     
     # 6.4. Añadir logo (siempre se toma del input 2)
-    # Aplicamos un loop, trim y escalado para ajustar la altura del logo (en este ejemplo a 300 px)
     complex_filter.extend([
         f"[2:v]loop=loop=-1:start=0:size=1,trim=duration={audio_duration},scale=-1:200,format=yuva420p,colorchannelmixer=aa=0.1[logo];",
-        f"{base_for_logo}[logo]overlay=x=(W-w)/2:y=H-h-150:format=auto[with_logo];",
-        "[with_logo]"
+        f"{base_for_logo}[logo]overlay=x=(W-w)/2:y=H-h-150:format=auto[with_logo];"
     ])
     
-    # 6.5. Subtítulos (siempre al final)
-    complex_filter.append(f"subtitles={temp_ass}[final];")
+    # 6.5. Superponer video glitch con opacidad del 70% antes de los subtítulos
+    complex_filter.extend([
+        f"[{glitch_idx}:v]scale=1920:1080,format=yuva420p,colorchannelmixer=aa=0.3[glitch];",
+        "[with_logo][glitch]overlay=0:0:format=auto[with_glitch];",
+        f"[with_glitch]subtitles={temp_ass}[final];"
+    ])
     
     # Unir filtros en una sola cadena
     complex_filter_str = " ".join(complex_filter).replace("; ", ";")
@@ -98,9 +107,9 @@ def generateVideoFromAudioAndSubtitles(
         "-filter_complex", complex_filter_str,
         "-map", "[final]",
         "-map", "1:a:0",
-        "-c:v", "libx264",
-        "-preset", "ultrafast",
-        "-crf", "34",
+        "-c:v", "libx265",
+        "-preset", "medium",
+        "-crf", "29",
         "-c:a", "aac",
         "-b:a", "299k",
         "-shortest",
