@@ -5,7 +5,20 @@
 <template>
   <div v-if="showModal" class="modal-overlay">
     <div class="modal-content">
-      <h3 class="d-flex align-items-center justify-content-start gap-2"><div v-html="icons.subtIcon"></div>Edit Subtitles</h3>
+      <h3 class="d-flex align-items-center justify-content-start gap-2">
+        <div v-html="icons.subtIcon"></div>Edit Subtitles
+      </h3>
+      
+      <!-- Nuevos botones para ajustar x segundo(s) a todos los subtítulos -->
+        <div class="subtitle-adjust-buttons" >
+          <button class="adjust-button" @click="adjustAllSubtitles(-1)">
+            <div v-html="icons.timeIcon" class="button-icon"></div>-1s
+          </button>
+          <button class="adjust-button" @click="adjustAllSubtitles(1)">
+            <div v-html="icons.timeIcon" class="button-icon"></div>+1s
+          </button>
+        </div>
+
       <SubtitlePreviewPlayer 
         v-if="showModal && audioFile"
         :subtitleEntries="subtitleEntries"
@@ -26,10 +39,10 @@
             <div class="d-flex">
               <div class="d-flex align-items-center justify-content-start gap-2">
                 <input
-                type="text"
-                :value="formatTime(entry.startTime)"
-                @input="updateTime(index, 'start', $event.target.value)"
-                class="time-input gap-3"
+                  type="text"
+                  :value="formatTime(entry.startTime)"
+                  @input="updateTime(index, 'start', $event.target.value)"
+                  class="time-input gap-3"
                 />
                 <input
                   type="text"
@@ -40,9 +53,15 @@
               </div>
               
               <div class="d-flex align-items-center justify-content-end gap-3">              
-                <button @click="addNewLineAtIndex(index + 1)" class="add-button"><div v-html="icons.deleteIcon"></div></button>
-                <button v-if="index > 0" @click="joinSegments(index)" class="join-button"><div v-html="icons.joinIcon"></div></button>
-                <button @click="deleteLine(index)" class="delete-button"><div v-html="icons.addIcon"></div></button>
+                <button @click="addNewLineAtIndex(index + 1)" class="add-button">
+                  <div v-html="icons.deleteIcon"></div>
+                </button>
+                <button v-if="index > 0" @click="joinSegments(index)" class="join-button">
+                  <div v-html="icons.joinIcon"></div>
+                </button>
+                <button @click="deleteLine(index)" class="delete-button">
+                  <div v-html="icons.addIcon"></div>
+                </button>
               </div>
             </div>
             <textarea
@@ -211,6 +230,15 @@
           }
         }
       }, 300),
+
+      // Nueva función para ajustar todos los tiempos de los subtítulos
+      adjustAllSubtitles(delta) {
+        this.subtitleEntries = this.subtitleEntries.map(entry => ({
+          ...entry,
+          startTime: Math.max(entry.startTime + delta, 0),
+          endTime: Math.max(entry.endTime + delta, 0)
+        }));
+      },
     },
     mounted() {
       this.scrollThrottle = throttle(this.scrollToActiveEntry, 300);
