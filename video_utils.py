@@ -82,7 +82,9 @@ def generateVideoFromAudioAndSubtitles(
 
     # Superponer video glitch con opacidad del 70%
     complex_filter.extend([
-        f"[{glitch_idx}:v]scale=1920:1080,format=yuva420p,colorchannelmixer=aa=0.3[glitch];",
+        f"[{glitch_idx}:v]scale=1920:1080,colorkey=0x00FF00:0.05:0.1,format=yuva420p[glitch_keyed];",
+        f"[glitch_keyed]colorchannelmixer=rr=1:rg=0:rb=0:ra=1:gr=0:gg=0.8:gb=0:ga=1:br=0:bg=0:bb=1:ba=1[glitch_corrected];",
+        f"[glitch_corrected]colorchannelmixer=aa=0.1[glitch];",
         "[base][glitch]overlay=0:0:format=auto[base];"
     ])
 

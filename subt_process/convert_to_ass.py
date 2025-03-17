@@ -86,8 +86,8 @@ TextCase: {text_case}
                     else:
                         end_time = start_time + 8
                     all_subtitles.append({
-                        'start': start_time + 1,
-                        'end': end_time + 2,
+                        'start': start_time + 0.5,
+                        'end': end_time + 1.5,
                         'text_lines': entry['text_lines']
                     })
                     if i == 0:
