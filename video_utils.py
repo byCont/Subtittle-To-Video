@@ -22,8 +22,8 @@ def generateVideoFromAudioAndSubtitles(
     background_video_path = os.path.join(background_videos_folder, os.listdir(background_videos_folder)[0])
 
     # 2. Seleccionar logo (input 2)
-    # logo_folder = os.path.join(os.path.dirname(__file__), 'logo')
-    # logo_image_path = os.path.join(logo_folder, os.listdir(logo_folder)[0])
+    logo_folder = os.path.join(os.path.dirname(__file__), 'logo')
+    logo_image_path = os.path.join(logo_folder, os.listdir(logo_folder)[0])
     
     # 3. Obtener duración del audio
     audio = AudioFileClip(audiofile)
@@ -36,65 +36,75 @@ def generateVideoFromAudioAndSubtitles(
     temp_ass = "temp_subtitles.ass"
     convert_to_ass_with_effects(subtitlefile, temp_ass, font_name, font_size, text_case, text_color)
     
-    ## Construir comando base
+    # 5. Construir comando base
     command = [
         "ffmpeg",
         "-stream_loop", "-1",          # Loop para el video de fondo
         "-t", str(audio_duration),
         "-i", background_video_path,   # Input 0: Video de fondo
         "-i", audiofile,               # Input 1: Audio
+        "-i", logo_image_path,         # Input 2: Logo
     ]
-
-    # Si existe una imagen adicional, se añade como Input 2
+    
+    # Si existe una imagen adicional, se añade como Input 3
     has_image = image_path is not None
     if has_image:
-        command.extend(["-i", image_path])  # Input 2: Imagen adicional
+        command.extend(["-i", image_path])  # Input 3: Imagen adicional
 
-    # Agregar video glitch como capa adicional
+    # Agregar video glitch (con opacidad 70% y loop) como capa adicional
     glitch_video_path = os.path.join(background_videos_folder, "glitch.mp4")
-    command.extend(["-stream_loop", "-1", "-i", glitch_video_path])  # Input 3 si has_image, Input 2 si no
-    glitch_idx = 2 if not has_image else 3  # Corregir el índice del glitch
-
-    # Construir filtro complejo dinámicamente
+    command.extend(["-stream_loop", "-1"])     # Loop para el video glitch
+    command.extend(["-i", glitch_video_path])
+    # Definir el índice del input para el video glitch: si existe imagen, será 4; sino, 3.
+    glitch_idx = 3 if not has_image else 4
+    
+    # 6. Construir filtro complejo dinámicamente
     complex_filter = []
-
-    # Escalar el video de fondo
+    
+    # 6.1. Escalar el video de fondo
     complex_filter.append("[0:v]scale=1920:1080[scaled];")
-
-    # Capa de color (si se requiere)
+    
+    # 6.2. Capa de color (si se requiere)
     has_color = bg_color != "#00000000"
     if has_color:
         complex_filter.extend([
             f"color=c={bg_color}:s=1920x1080,format=yuva420p[color_layer];",
             "[scaled][color_layer]overlay=format=auto[overlaid];",
-            "[overlaid]fps=24[base];"
+            "[overlaid]fps=24[withfps];"
         ])
     else:
-        complex_filter.append("[scaled]fps=24[base];")
-
-    # Capa de imagen (opcional)
+        complex_filter.append("[scaled]fps=24[withfps];")
+    
+    # 6.3. Capa de imagen (opcional)
     if has_image:
-        # Usamos Input 2 para la imagen adicional
         complex_filter.extend([
-            f"[2:v]loop=loop=-1:start=0:size=1,trim=duration={audio_duration},scale=-1:1080[img];",
-            "[base][img]overlay=W-w:0:format=auto[base];"
+            f"[3:v]loop=loop=-1:start=0:size=1,trim=duration={audio_duration},scale=-1:1080[img];",
+            "[withfps][img]overlay=W-w:0:format=auto[with_image];"
         ])
-
-    # Superponer video glitch con opacidad del 70%
+        base_for_logo = "[with_image]"
+    else:
+        base_for_logo = "[withfps]"
+    
+    # 6.4. Añadir logo (siempre se toma del input 2)
+    # Añadir logo con aparición cada 45 segundos
+    complex_filter.extend([
+        f"[2:v]loop=loop=-1:start=0:size=1,trim=duration={audio_duration},scale=-1:420,format=yuva420p,colorchannelmixer=aa=0.1[logo];",
+        f"{base_for_logo}[logo]overlay=x=(W-w)/2:y=H-h-20:enable='lt(mod(t,45),8)'[with_logo];"
+    ])
+    
+    # 6.5. Superponer video glitch con clave de color, corrección de tinte y opacidad del 70%
     complex_filter.extend([
         f"[{glitch_idx}:v]scale=1920:1080,colorkey=0x00FF00:0.05:0.1,format=yuva420p[glitch_keyed];",
         f"[glitch_keyed]colorchannelmixer=rr=1:rg=0:rb=0:ra=1:gr=0:gg=0.8:gb=0:ga=1:br=0:bg=0:bb=1:ba=1[glitch_corrected];",
-        f"[glitch_corrected]colorchannelmixer=aa=0.1[glitch];",
-        "[base][glitch]overlay=0:0:format=auto[base];"
+        f"[glitch_corrected]colorchannelmixer=aa=0.16[glitch];",
+        "[with_logo][glitch]overlay=0:0:format=auto[with_glitch];",
+        f"[with_glitch]subtitles={temp_ass}[final];"
     ])
-
-    # Añadir subtítulos
-    complex_filter.append(f"[base]subtitles={temp_ass}[final];")
-
+    
     # Unir filtros en una sola cadena
-    complex_filter_str = "".join(complex_filter)
-
-    # Completar comando
+    complex_filter_str = " ".join(complex_filter).replace("; ", ";")
+    
+    # 7. Completar comando
     command.extend([
         "-filter_complex", complex_filter_str,
         "-map", "[final]",

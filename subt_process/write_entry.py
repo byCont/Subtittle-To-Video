@@ -113,14 +113,14 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
         )
         text = re.sub(
             r'("([^"]+)")',
-            lambda match: fr'{{\fnDancing Script Bold\fs140\3c{shadow_3c}&\c{chorus_c}&\4c{shadow_3c}&\shad3\bord2}}'
+            lambda match: fr'{{\fnDancing Script Bold\fs140\3c{shadow_3c}&\c{quote_c}&\4c{shadow_3c}&\shad3\bord2}}'
                           + custom_capitalize(match.group(1), 'capitalize')
                           + r'{\r}' + override_tags,
             text
         )
         text = re.sub(
             r'\*([^*]+)\*',
-            lambda match: fr'{{\fs180\3c{shadow_3c}&\c{title_c}&\4c{shadow_3c}&\shad3\bord2}}\N'
+            lambda match: fr'{{\fs250\3c{shadow_3c}&\c{title_c}&\4c{shadow_3c}&\shad3\bord2}}\N'
                           + match.group(1).upper()
                           + r'{\r}' + override_tags,
             text
@@ -134,7 +134,7 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
         )
         text = re.sub(
             r'\%([^%]+)\%',
-            lambda match: fr'{{\3c{shadow_3c}&\c{highlight_c}&\4c{shadow_3c}&\shad3\bord2}}'
+            lambda match: fr'{{fs150\3c{shadow_3c}&\c{highlight_c}&\4c{shadow_3c}&\shad3\bord2}}'
                           + custom_capitalize(match.group(1), text_case)
                           + r'{\r}' + override_tags,
             text
