@@ -124,6 +124,7 @@ TextCase: {text_case}
                     font_size,
                     text_case,
                     text_color,
+                    font_name,
                     style="Default",
                     title_mode=False  # Por defecto, se omite ya que es False
                 )
@@ -141,6 +142,7 @@ TextCase: {text_case}
                             font_size,
                             text_case,
                             text_color,
+                            font_name,
                             style="Default",
                             title_mode=True  # Centrado para título/artista
                         )

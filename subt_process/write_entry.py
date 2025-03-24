@@ -44,7 +44,7 @@ def custom_capitalize(text, text_case):
     elif delimiter == '""':
         return f'"{nuevo_contenido}"'
 
-def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, text_color, style="Default", title_mode=False):
+def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, text_color, font_name, style="Default", title_mode=False):
     """
     Genera una línea de subtítulo en formato ASS con efecto de animación tipo 'cube'.
     El texto entra desde abajo hasta quedar centrado y, en los últimos 2000 ms,
@@ -90,7 +90,9 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
 
         # Combinar todas las etiquetas override
         # override_tags = fr'{{{move_effect}{effect}{tracking_effect}{style_override}{exit_effect}\c{default_c}\3c{shadow_3c}\4c{shadow_3c}\shad3\bord2}}'
-        override_tags = fr'{{{effect}{style_override}\c{default_c}\3c{shadow_3c}\4c{shadow_3c}\shad3\bord2}}'
+        SHAD_VALUE = 5  # Valor para la sombra
+        BORD_VALUE = 3  # Valor para el borde
+        override_tags = fr'{{{effect}{style_override}\c{default_c}\3c{shadow_3c}\4c{shadow_3c}\shad{SHAD_VALUE}\bord{BORD_VALUE}}}'
 
         # Procesar y limpiar el texto
         clean_lines = [line for line in text_lines if line]
@@ -106,36 +108,37 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
         # Aplicar estilos especiales (para textos entre paréntesis, comillas, asteriscos, etc.)
         text = re.sub(
             r'(\([^)]+\))',
-            lambda match: fr'{{\fnDancing Script Bold\fs140\3c{shadow_3c}&\c{chorus_c}&\4c{shadow_3c}&\shad3\bord2}}'
+            lambda match: fr'{{\fnDancing Script Bold\fs140\3c{shadow_3c}&\c{chorus_c}&\4c{shadow_3c}&\shad{SHAD_VALUE}\bord{BORD_VALUE}}}'
                           + custom_capitalize(match.group(1), 'capitalize')
                           + r'{\r}' + override_tags,
             text
         )
         text = re.sub(
             r'("([^"]+)")',
-            lambda match: fr'{{\fnDancing Script Bold\fs140\3c{shadow_3c}&\c{quote_c}&\4c{shadow_3c}&\shad3\bord2}}'
+            lambda match: fr'{{\fnDancing Script Bold\fs140\3c{shadow_3c}&\c{quote_c}&\4c{shadow_3c}&\shad{SHAD_VALUE}\bord{BORD_VALUE}}}'
                           + custom_capitalize(match.group(1), 'capitalize')
                           + r'{\r}' + override_tags,
             text
         )
         text = re.sub(
             r'\*([^*]+)\*',
-            lambda match: fr'{{\fs250\3c{shadow_3c}&\c{title_c}&\4c{shadow_3c}&\shad3\bord2}}\N'
+            lambda match: fr'{{\fs250\3c{shadow_3c}&\c{title_c}&\4c{shadow_3c}&\shad{SHAD_VALUE}\bord{BORD_VALUE}}}\N'
                           + match.group(1).upper()
                           + r'{\r}' + override_tags,
             text
         )
         text = re.sub(
             r'\+([^+]+)\+',
-            lambda match: fr'{{\fs{font_size + 40}\3c{shadow_3c}&\c{highlight_c}&\4c{shadow_3c}&\shad3\bord2}}\N'
+            lambda match: fr'{{\fs{font_size + 40}\3c{shadow_3c}&\c{highlight_c}&\4c{shadow_3c}&\shad{SHAD_VALUE}\bord{BORD_VALUE}}}\N'
                           + match.group(1).upper()
                           + r'{\r}' + override_tags,
             text
         )
+        italic_font = font_name + " Italic"
         text = re.sub(
             r'\%([^%]+)\%',
-            lambda match: fr'{{fs150\3c{shadow_3c}&\c{highlight_c}&\4c{shadow_3c}&\shad3\bord2}}'
-                          + custom_capitalize(match.group(1), text_case)
+            lambda match: fr'{{\fn{italic_font}\fs150\3c{shadow_3c}&\c{quote_c}&\4c{shadow_3c}&\shad{SHAD_VALUE}\bord{BORD_VALUE}}}'
+                          + match.group(1).upper()
                           + r'{\r}' + override_tags,
             text
         )

@@ -170,7 +170,7 @@
           { name: 'Product Sans', value: 'Product Sans Bold' }, // default font
           { name: 'Poppins Bold', value: 'Poppins Bold'},
           { name: 'Impact', value: 'Impact' },
-          { name: 'Merriweather', value: 'Merriweather Bold'},
+          { name: 'Merriweather', value: 'Merriweather Sans Bold'},
           { name: 'Monomakh', value: 'Monomakh Regular'},
           { name: 'Dancing Script Regular', value: 'Dancing Script Bold' },
           { name: 'Barriecito', value: 'Barriecito Regular'},
