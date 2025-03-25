@@ -156,7 +156,7 @@
     },
     data() {
       return {
-        selectedFont: 'Product Sans Bold',
+        selectedFont: 'Lexend Bold',
         fontSize: 120,
         selectedTextCase: 'capitalize',
         selectedTextColor: 'light',
@@ -167,19 +167,11 @@
         icons,
         showSubtitleEditor: false,
         fontOptions: [
-          { name: 'Product Sans', value: 'Product Sans Bold' }, // default font
-          { name: 'Poppins Bold', value: 'Poppins Bold'},
-          { name: 'Impact', value: 'Impact' },
-          { name: 'Merriweather', value: 'Merriweather Sans Bold'},
-          { name: 'Monomakh', value: 'Monomakh Regular'},
-          { name: 'Dancing Script Regular', value: 'Dancing Script Bold' },
-          { name: 'Barriecito', value: 'Barriecito Regular'},
-          { name: 'Lobster', value: 'Lobster Regular'},
-          { name: 'Permanent Marker',value: 'Permanent Marker Regular'},
-          { name: 'Satisfy', value: 'Satisfy Regular'},
-          { name: 'Alfa Slab One', value: 'Alfa Slab One Regular' },
-          { name: 'Stardos Stencil', value: 'Stardos Stencil Bold'},
-          { name: 'Lexend', value: 'Lexend Bold'}
+          { name: 'Pt Sans', value: 'PT Sans Bold' }, 
+          { name: 'Merriweather Sans', value: 'Merriweather Sans Bold'},
+          { name: 'Lexend', value: 'Lexend Bold'}, // default font
+          { name: 'Ubuntu', value: 'Ubuntu Bold'},
+          { name: 'Roboto Serif', value: 'Roboto Serif Bold'}
         ]
       };
     },

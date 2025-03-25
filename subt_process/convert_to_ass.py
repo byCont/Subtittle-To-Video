@@ -1,3 +1,4 @@
+import re
 from subt_process.write_entry import write_ass_entry
 
 def convert_to_ass_with_effects(subtitlefile, output_ass, font_name, font_size, text_case, text_color):
@@ -24,10 +25,20 @@ TextCase: {text_case}
             all_subtitles = []
             title_artist = None
 
+            # Leer el contenido completo del archivo
+            content = f_in.read()
+            
+            # Buscar el marcador de título/artista
+            title_match = re.search(r'\[TITLE\](.*?)(?=\[\d|$)', content, re.DOTALL)
+            if title_match:
+                title_text = title_match.group(1).strip()
+                title_artist = {'text_lines': title_text.split('\n')}
+                # Eliminar la parte del título del contenido para el procesamiento normal
+                content = content.replace(title_match.group(0), '')
+            
             # Procesamiento de .srt
             if subtitlefile.endswith('.srt'):
-                content = f_in.read().strip()
-                blocks = content.split('\n\n')
+                blocks = content.strip().split('\n\n')
                 for i, block in enumerate(blocks):
                     lines = block.splitlines()
                     if len(lines) < 3:
@@ -45,16 +56,19 @@ TextCase: {text_case}
                         'end': end_time,
                         'text_lines': text_lines
                     })
-                    if i == 0:
-                        title_artist = {'text_lines': text_lines}
+                    # Ya no usamos el primer subtítulo como título/artista
+                    # if i == 0 and not title_artist:
+                    #     title_artist = {'text_lines': text_lines}
 
             # Procesamiento de .lrc
             elif subtitlefile.endswith('.lrc'):
                 entries = []
                 current_entry = None
-                for line in f_in:
-                    line = line.rstrip("\n")
-                    if line.startswith('['):
+                
+                # Procesar el contenido línea por línea
+                for line in content.splitlines():
+                    line = line.strip()
+                    if line.startswith('[') and not line.startswith('[TITLE]'):
                         if current_entry:
                             entries.append(current_entry)
                         end_bracket = line.find(']')
@@ -75,8 +89,10 @@ TextCase: {text_case}
                     else:
                         if current_entry is not None and line.strip():
                             current_entry['text_lines'].append(line.strip())
+                
                 if current_entry:
                     entries.append(current_entry)
+                
                 for i, entry in enumerate(entries):
                     start_time = entry['start']
                     if i < len(entries) - 1:
@@ -90,10 +106,15 @@ TextCase: {text_case}
                         'end': end_time + 1.5,
                         'text_lines': entry['text_lines']
                     })
-                    if i == 0:
-                        title_artist = {'text_lines': entry['text_lines']}
+                    # Ya no usamos el primer subtítulo como título/artista
+                    # if i == 0 and not title_artist:
+                    #     title_artist = {'text_lines': entry['text_lines']}
 
             all_subtitles.sort(key=lambda x: x['start'])
+
+            # Si no hay título/artista definido y hay subtítulos, usar el primero como fallback
+            if not title_artist and all_subtitles:
+                title_artist = {'text_lines': all_subtitles[0]['text_lines']}
 
             # Identificar gaps (espacios en blanco)
             gaps = []

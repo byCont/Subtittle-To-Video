@@ -121,22 +121,15 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
             text
         )
         text = re.sub(
-            r'\*([^*]+)\*',
+            r'\*\*([^*]+)\*\*',
             lambda match: fr'{{\fs250\3c{shadow_3c}&\c{title_c}&\4c{shadow_3c}&\shad{SHAD_VALUE}\bord{BORD_VALUE}}}\N'
-                          + match.group(1).upper()
-                          + r'{\r}' + override_tags,
-            text
-        )
-        text = re.sub(
-            r'\+([^+]+)\+',
-            lambda match: fr'{{\fs{font_size + 40}\3c{shadow_3c}&\c{highlight_c}&\4c{shadow_3c}&\shad{SHAD_VALUE}\bord{BORD_VALUE}}}\N'
                           + match.group(1).upper()
                           + r'{\r}' + override_tags,
             text
         )
         italic_font = font_name + " Italic"
         text = re.sub(
-            r'\%([^%]+)\%',
+            r'\*([^*]+)\*',
             lambda match: fr'{{\fn{italic_font}\fs150\3c{shadow_3c}&\c{quote_c}&\4c{shadow_3c}&\shad{SHAD_VALUE}\bord{BORD_VALUE}}}'
                           + match.group(1).upper()
                           + r'{\r}' + override_tags,

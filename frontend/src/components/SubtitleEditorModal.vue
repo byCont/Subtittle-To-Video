@@ -8,8 +8,16 @@
       <h3 class="d-flex align-items-center justify-content-start gap-2">
         <div v-html="icons.subtIcon"></div>Edit Subtitles
       </h3>
-      
-      <!-- Nuevos botones para ajustar x segundo(s) a todos los subtítulos -->
+            
+      <SubtitlePreviewPlayer 
+        v-if="showModal && audioFile"
+        :subtitleEntries="subtitleEntries"
+        :audioFile="audioFile"
+        @time-update="handleTimeUpdate"
+        ref="previewPlayer"
+      />
+      <div class="scrollable-container" ref="scrollContainer">        
+        <!-- Nuevos botones para ajustar x segundo(s) a todos los subtítulos -->
         <div class="subtitle-adjust-buttons" >
           <button class="adjust-button" @click="adjustAllSubtitles(-1)">
             <div v-html="icons.timeIcon" class="button-icon"></div>-1s
@@ -19,14 +27,16 @@
           </button>
         </div>
 
-      <SubtitlePreviewPlayer 
-        v-if="showModal && audioFile"
-        :subtitleEntries="subtitleEntries"
-        :audioFile="audioFile"
-        @time-update="handleTimeUpdate"
-        ref="previewPlayer"
-      />
-      <div class="scrollable-container" ref="scrollContainer">
+      <!-- Campo para título y artista -->
+      <div class="title-artist-container">
+        <h4>Title & Artist</h4>
+        <p class="info-text">This text will appear during gaps in the video</p>
+        <textarea
+          v-model="titleArtistText"
+          class="title-artist-input"
+          placeholder="Enter title and artist information"
+        ></textarea>
+      </div>
         <div class="subtitle-list">
           <div 
             v-for="(entry, index) in subtitleEntries" 
@@ -107,6 +117,7 @@
     data() {
       return {
         subtitleEntries: [],
+        titleArtistText: '',
         icons,
         currentAudioTime: 0,
         entryElements: [],
@@ -116,22 +127,42 @@
     watch: {
       subtitles(newVal) {
         if (newVal) {
-          const parsed = parseSubtitles(newVal);
-          // Para cada entrada, reemplazamos "\n" (literal) por un salto de línea real
-          this.subtitleEntries = parsed.map(entry => ({
-            ...entry,
-            text: entry.text.replace(/\\n/g, '\n')
-          }));
+          // Extraer título/artista si está presente como un marcador especial
+          const titleMatch = newVal.match(/^\[TITLE\](.*?)(?=\[\d|$)/s);
+          if (titleMatch) {
+            this.titleArtistText = titleMatch[1].trim();
+            // Eliminar la parte del título del contenido para el parsing
+            const contentWithoutTitle = newVal.replace(/^\[TITLE\].*?(?=\[\d|$)/s, '');
+            this.parseSubtitleContent(contentWithoutTitle);
+          } else {
+            this.parseSubtitleContent(newVal);
+          }
         }
       },
     },
     methods: {
+      parseSubtitleContent(content) {
+        const parsed = parseSubtitles(content);
+        // Para cada entrada, reemplazamos "\n" (literal) por un salto de línea real
+        this.subtitleEntries = parsed.map(entry => ({
+          ...entry,
+          text: entry.text.replace(/\\n/g, '\n')
+        }));
+      },
       formatTime,
       updateTime(index, field, value) {
         this.subtitleEntries = updateTime(this.subtitleEntries, index, field, value);
       },
       saveChanges() {
-        const updatedSubtitles = this.subtitleEntries
+        // Primero añadimos el título/artista como un marcador especial
+        let updatedSubtitles = '';
+        
+        if (this.titleArtistText.trim()) {
+          updatedSubtitles = `[TITLE]${this.titleArtistText.trim()}\n\n`;
+        }
+        
+        // Luego añadimos los subtítulos normales
+        updatedSubtitles += this.subtitleEntries
           .map((entry) => {
             const timeTag = `[${this.formatTime(entry.startTime)}]`;
             // Reemplazar saltos de línea reales por "\n" escapado
@@ -250,5 +281,3 @@
     }
   };
 </script>
-
-[file content end]

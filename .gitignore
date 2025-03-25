@@ -9,3 +9,4 @@ logo/*
 frontend/node_modules
 templates/dist
 subt_process/__pycache__/*
+context.md
