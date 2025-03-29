@@ -1,23 +1,24 @@
 ## Video Lyric Generator
 
 ## Overview
-This project is a video editing application with a **Python/Flask backend** and a **Vue.js frontend**. It allows users to upload videos, trim clips, merge multiple video clips, and add subtitles. The backend leverages **FFmpeg** and **moviepy** for video processing, while the frontend uses **Tailwind CSS** and **Wavesurfer.js** for a modern and responsive UI.
+This project is a video generation application with a **Python/Flask backend** and a **Vue.js frontend**. It allows users to create lyric videos by combining audio files, subtitles, and background videos. The backend leverages **FFmpeg** and **moviepy** for video processing, while the frontend uses **Tailwind CSS** and **Wavesurfer.js** for a modern and responsive UI.
 
 ---
 
 ## Features
 
 ### Backend Features
-- **Upload Videos**: Accepts video files and stores them on the server.
-- **Trim Videos**: Allows trimming of video files based on user-specified start and end times.
-- **Merge Videos**: Concatenates multiple video clips into one final render.
-- **Add Subtitles**: Adds subtitle files (SRT/ASS) to videos with customizable styles.
+- **Audio Processing**: Accepts audio files and processes them for video generation.
+- **Subtitle Integration**: Adds subtitle files (SRT/ASS) to videos with customizable styles and effects.
+- **Background Video Management**: Uses looping background videos for visual appeal.
+- **Text Customization**: Supports different fonts, sizes, colors, and text effects.
 
 ### Frontend Features
-- **Video Upload Interface**: Drag-and-drop functionality and file input for video upload.
-- **Preview Videos**: Embedded video player for previewing uploaded or edited videos.
-- **Video List Management**: Manage uploaded videos with options to edit or remove them.
-- **Final Render**: Merge multiple videos into a single final clip.
+- **Audio Upload Interface**: Drag-and-drop functionality and file input for audio upload.
+- **Subtitle Editor**: Interface for adding and editing subtitle timing and content.
+- **Preview System**: Live preview of how the lyrics will appear in the video.
+- **Style Customization**: UI controls for customizing text appearance and effects.
+- **Final Render**: Generate the complete lyric video with synchronized audio and text.
 
 ---
 
@@ -157,5 +158,3 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 - [FFmpeg](https://ffmpeg.org/)
 - [moviepy](https://zulko.github.io/moviepy/)
 - [Vue3-Toastify](https://github.com/Maronato/vue-toastify)
-
-

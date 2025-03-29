@@ -88,7 +88,7 @@ def generateVideoFromAudioAndSubtitles(
     # 6.4. Añadir logo (siempre se toma del input 2)
     # Añadir logo con aparición cada 45 segundos
     complex_filter.extend([
-        f"[2:v]loop=loop=-1:start=0:size=1,trim=duration={audio_duration},scale=-1:150,format=yuva420p,colorchannelmixer=aa=0.5[logo];",
+        f"[2:v]loop=loop=-1:start=0:size=1,trim=duration={audio_duration},scale=-1:100,format=yuva420p,colorchannelmixer=aa=0.9[logo];",
         f"{base_for_logo}[logo]overlay=x=(W-w)/2:y=H-h-60:enable='lt(mod(t,45),8)'[with_logo];"
     ])
     

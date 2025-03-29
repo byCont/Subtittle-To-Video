@@ -1,24 +1,25 @@
 // frontend/src/components/VideoUpload.vue
 
 <template>
-    <div class="col-lg-3 video-upload-container">
-      <div class="form-group d-flex align-items-center justify-content-start gap-3">
+    <div class="col-12 col-sm-8 col-md-10 col-lg-4" style="background-color: var(--secondary-color); border-radius: var(--border-radius); padding: 1.5rem; overflow-x: hidden;">
+      <div class="form-group flex-column">
              
-        <div class="form-control-group">
+        <div class="form-control-group w-100 mb-3">
           <label class="d-flex align-items-center justify-content-start gap-2" for="audioinput"><div v-html="icons.fileAudio"></div>Add Audio:</label>
           <input 
             type="file" 
             id="audioinput" 
             accept="audio/*" 
             @change="handleAudioSelect"
+            class="w-100"
           />
         </div>
 
-        <div class="form-control-group">
+        <div class="form-control-group w-100 mb-3">
           
           <label class="d-flex align-items-center justify-content-start gap-2" for="subtitleinput"><div v-html="icons.addSubt"></div>Add Subtitles:</label>
-          <div class="subtitle-input-container">
-            <input type="file" id="subtitleinput" accept=".srt,.ass,.lrc" @change="handleFileSelect" />
+          <div class="subtitle-input-container d-flex align-items-center">
+            <input type="file" id="subtitleinput" accept=".srt,.ass,.lrc" @change="handleFileSelect" class="flex-grow-1" />
             <!-- Botón para editar subtítulos -->
             <PasteSubtitles @subtitles-pasted="handleSubtitlesPasted" />
             <button 
@@ -40,90 +41,98 @@
           @close-modal="closeSubtitleEditor"
         />
 
-        <div class="form-control-group">
+        <div class="form-control-group w-100 mb-3">
           <label class="d-flex align-items-center justify-content-start gap-2" for="imageinput"><div v-html="icons.addImage"></div>Add Image:</label>
           <input 
             type="file" 
             id="imageinput" 
             accept="image/*"
             @change="handleImageSelect"
+            class="w-100"
           />
         </div>
 
       <!-- Nuevos campos para fuente y tamaño -->
-        <div class="form-control-group-text">
-          <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.styleIcon"></div>Font Style:</label>
-          <select v-model="selectedFont" class="form-control">
-            <option
-              class="option" 
-              v-for="font in fontOptions" 
-              :key="font.value" 
-              :value="font.value"
-              :style="{ fontFamily: font.value }"
-            >
-              {{ font.name }}
-            </option>
-          </select>
+        <div class="d-flex gap-3">
+          <div class="form-control-group-text mb-3">
+            <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.styleIcon"></div>Font Style:</label>
+            <select v-model="selectedFont" class="form-control">
+              <option
+                class="option" 
+                v-for="font in fontOptions" 
+                :key="font.value" 
+                :value="font.value"
+                :style="{ fontFamily: font.value }"
+              >
+                {{ font.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-control-group-text mb-3">
+            <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.caseIcon"></div>Text Case:</label>
+            <select v-model="selectedTextCase" class="form-control">            
+              <option class="option" value="upper">AA</option>
+              <option class="option" value="capitalize">Aa</option>
+            </select>
+          </div>
+        </div>
+        <div class="d-flex gap-3 mb-3">
+          <div class="form-control-group-text flex-grow-1">
+            <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.fontColorIcon"></div>Text Color:</label>
+            <select v-model="selectedTextColor" class="form-control">            
+              <option class="option" value="light">Light</option>
+              <option class="option" value="dark">Dark</option>
+              <option class="option" value="blue">Blue</option>
+              <option class="option" value="coffee">Coffee</option>
+              <option class="option" value="green">Green</option>            
+              <option class="option" value="red">Red</option>
+            </select>
+          </div>
+
+          <div class="form-control-group-text flex-grow-1">
+            <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.fontIcon"></div>Text Size:</label>
+            <select v-model="fontSize" class="form-control">
+              <option value="30">60</option>
+              <option value="95">95</option>
+              <option value="110">110</option>
+              <option value="120">120</option>
+              <option value="130">130</option>
+              <option value="150">150</option>            
+              <option value="165">165</option>
+            </select>
+          </div>
+
+          <!-- Cambiar el input a tipo text para permitir vacío -->
+          <div class="form-control-group-text flex-grow-1">
+            <label class="d-flex align-items-center justify-content-start gap-1"> <div v-html="icons.colorIcon"></div>Background:</label>
+            <div class="d-flex gap-2 align-items-center">
+              <input 
+                type="color" 
+                v-model="selectedColor" 
+                class="form-control"
+                :style="{ backgroundColor: selectedColor || 'transparent' }"
+              >
+              <div class="form-check ms-2">
+                <input 
+                  type="checkbox" 
+                  id="enableBg"
+                  v-model="enableBackgroundColor" 
+                  class="form-check-input"
+                >
+                <label for="enableBg" class="form-check-label">Enable</label>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="form-control-group-text">
-          <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.caseIcon"></div>Text Case:</label>
-          <select v-model="selectedTextCase" class="form-control">            
-            <option class="option" value="upper">AA</option>
-            <option class="option" value="capitalize">Aa</option>
-          </select>
-        </div>
-
-        <div class="form-control-group-text">
-          <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.fontColorIcon"></div>Text Color:</label>
-          <select v-model="selectedTextColor" class="form-control">            
-            <option class="option" value="light">Light</option>
-            <option class="option" value="dark">Dark</option>
-            <option class="option" value="blue">Blue</option>
-            <option class="option" value="coffee">Coffee</option>
-            <option class="option" value="green">Green</option>            
-            <option class="option" value="red">Red</option>
-          </select>
-        </div>
-
-        <div class="form-control-group-text">
-          <label class="d-flex align-items-center justify-content-start gap-1"><div v-html="icons.fontIcon"></div>Text Size:</label>
-          <select v-model="fontSize" class="form-control">
-            <option value="30">60</option>
-            <option value="95">95</option>
-            <option value="110">110</option>
-            <option value="120">120</option>
-            <option value="130">130</option>
-            <option value="150">150</option>            
-            <option value="165">165</option>
-          </select>
-        </div>
-
-        <!-- Cambiar el input a tipo text para permitir vacío -->
-        <div class="form-control-group-text">
-          <label class="d-flex align-items-center justify-content-start gap-1"> <div v-html="icons.colorIcon"></div>Background:</label>
-          <div class="d-flex gap-2">
-            <input 
-            type="color" 
-            v-model="selectedColor" 
-            class="form-control"
-            :style="{ backgroundColor: selectedColor || 'transparent' }"
-          >
-          <input 
-            type="checkbox" 
-            v-model="enableBackgroundColor" 
-            class="form-checkbox"
-          >Enable</div>
-          
-        </div>
-
-        <div class="form-buttons">
-          <button class="btn btn-success" @click="handleGenerate">Generate Video</button>
+        <div class="form-buttons w-100 mt-4">
+          <button class="btn btn-success w-100" @click="handleGenerate">Generate Video</button>
         </div>
       </div>
 
       <!-- Progress Bar -->
-      <div class="progress-container" v-if="uploadProgress > 0">
+      <div class="progress-container mt-3" v-if="uploadProgress > 0">
         <div class="progress">
           <div
             id="uploadprogress"

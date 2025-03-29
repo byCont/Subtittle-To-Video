@@ -10,3 +10,4 @@ frontend/node_modules
 templates/dist
 subt_process/__pycache__/*
 context.md
+subt_process/__pycache__/write_entry.cpython-312.pyc

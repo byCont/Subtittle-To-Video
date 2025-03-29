@@ -70,7 +70,7 @@ def write_ass_entry(f_out, start, end, text_lines, index, font_size, text_case, 
 
         # Configuración de colores
         color_map = {
-            'dark':   ('&H000000', '&H5B5B5B', '&H909090', '&H303030', '&H454545', '&HFFFFFF'),
+            'dark':   ('&H303030', '&00A2C6', '5B5B5B', '&H303030', '&H454545', '&HFFFFFF'),
             'blue':   ('&H503E2C', '&HA67428', '&HC79954', '&H604315', '&H76521A', '&HFFFFFF'),
             'coffee': ('&H2C3E50', '&H2874A6', '&H5499C7', '&H154360', '&H1A5276', '&HFFFFFF'),
             'green':  ('&H2C503E', '&H28A674', '&H54C799', '&H156043', '&H1A7652', '&HFFFFFF'),
