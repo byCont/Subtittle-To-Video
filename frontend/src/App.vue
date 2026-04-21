@@ -2,7 +2,7 @@
   <div class="app-container">
     <AppHeader />
     <div class="main-content">
-      <CustomLoader v-if="loading" />
+      <CustomLoader v-if="loading" :progress="renderProgress" :time="renderTime" />
       <div class="content-grid">
         <VideoUpload 
           @upload="uploadVideoFile"

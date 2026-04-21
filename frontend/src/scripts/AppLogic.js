@@ -12,9 +12,25 @@ export default {
       loading: false,
       videoToRender: null,
       uploadprogress: 0,
+      renderProgress: null,
+      renderTime: '00:00:00',
+      progressInterval: null
     };
   },
   methods: {
+    pollProgress(taskId) {
+      this.renderProgress = 0;
+      this.renderTime = '00:00:00';
+      if (this.progressInterval) clearInterval(this.progressInterval);
+      this.progressInterval = setInterval(() => {
+        axios.get(`${apiBaseUrl}/progress/${taskId}`).then(res => {
+          if (res.data) {
+            this.renderProgress = res.data.percentage;
+            this.renderTime = res.data.time;
+          }
+        }).catch(() => {});
+      }, 1000);
+    },
     
     generateVideo(params) {
       this.loading = true;
@@ -27,7 +43,11 @@ export default {
         return toast.warning("¡Se requieren el archivo de audio y los subtítulos editados!");
       }
     
+      const taskId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+      this.pollProgress(taskId);
+
       const data = new FormData();
+      data.append("task_id", taskId);
       data.append("audiofile", audioFile);
       
       // Crear Blob con el contenido editado CORRECTO
@@ -63,6 +83,10 @@ export default {
         toast.error("Error de conexión con el servidor");
         console.error('Detalles del error:', error);
         this.loading = false;
+      })
+      .finally(() => {
+        if (this.progressInterval) clearInterval(this.progressInterval);
+        setTimeout(() => { this.renderProgress = null; }, 1000);
       });    
     }
   },

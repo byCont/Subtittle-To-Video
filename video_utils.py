@@ -8,12 +8,14 @@ def generateVideoFromAudioAndSubtitles(
     text_case: str = 'capitalize',
     text_color: str = 'light',
     bg_color: str = "#00000000",
-    image_path: str = None
+    image_path: str = None,
+    task_id: str = "default"
 ):
     import os
     import time
     import subprocess
-    from moviepy.editor import AudioFileClip
+    import json
+    from moviepy import AudioFileClip
     from config import config
     from subt_process.convert_to_ass import convert_to_ass_with_effects
 
@@ -29,6 +31,10 @@ def generateVideoFromAudioAndSubtitles(
     audio = AudioFileClip(audiofile)
     audio_duration = audio.duration
     audio.close()
+    
+    meta_path = os.path.join(config['video_savepath'], f"progress_{task_id}_meta.json")
+    with open(meta_path, "w") as f:
+        json.dump({"duration": audio_duration}, f)
     
     output_path = config['video_savepath'] + "generated_" + str(int(time.time())) + ".mp4"
     
@@ -105,6 +111,9 @@ def generateVideoFromAudioAndSubtitles(
     complex_filter_str = " ".join(complex_filter).replace("; ", ";")
     
     # 7. Completar comando
+    progress_file = os.path.join(config['video_savepath'], f"progress_{task_id}.txt")
+    open(progress_file, "w").close()
+
     command.extend([
         "-filter_complex", complex_filter_str,
         "-map", "[final]",
@@ -115,6 +124,7 @@ def generateVideoFromAudioAndSubtitles(
         "-c:a", "aac",
         "-b:a", "299k",
         "-shortest",
+        "-progress", progress_file,
         "-y",
         output_path
     ])

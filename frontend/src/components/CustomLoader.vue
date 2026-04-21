@@ -34,11 +34,18 @@
             />
           </svg>
         </div>
-        <div class="loader-text fade-in">           
-          <div class="dots-animation">
+        <div class="loader-text fade-in" style="width: 100%; max-width: 200px; margin: 0 auto; display: flex; flex-direction: column;">           
+          <div class="dots-animation" v-if="progress === null || progress === 0">
             <span class="dot">Genering </span>
             <span class="dot">video </span>
             <span class="dot">lyric...</span>
+          </div>
+          <div v-else style="width: 100%; text-align: center;">
+            <div style="font-size: 0.9em; margin-bottom: 8px;">Renderizando: {{ progress }}%</div>
+            <div style="font-size: 0.7em; margin-bottom: 5px;">Tiempo: {{ time }}</div>
+            <div style="width: 100%; background: rgba(255,255,255,0.2); border-radius: 5px; height: 8px; margin-top: 10px; overflow: hidden;">
+              <div :style="{ width: progress + '%', background: 'var(--button-hover-color)', height: '100%', borderRadius: '5px', transition: 'width 0.5s ease' }"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -48,7 +55,17 @@
 
 <script>
   export default {
-    name: 'CustomLoader'
+    name: 'CustomLoader',
+    props: {
+      progress: {
+        type: Number,
+        default: null
+      },
+      time: {
+        type: String,
+        default: '00:00:00'
+      }
+    }
   }
 </script>
 
